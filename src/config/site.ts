@@ -68,10 +68,10 @@ export const site = {
       { label: "Planinske staze Igmana", value: "5 – 15 min" },
       { label: "Aerodrom Sarajevo", value: "cca 25 min vožnje" },
     ],
-    // Google Maps embed (bez API ključa) — zamijeniti tačnom lokacijom.
+    // Tačna lokacija objekta (43.8035377, 18.2040934).
     mapEmbedUrl:
-      "https://www.google.com/maps?q=Igman%20Bosna%20i%20Hercegovina&z=12&output=embed",
-    mapsLink: "https://www.google.com/maps?q=Igman+Bosna+i+Hercegovina",
+      "https://www.google.com/maps?q=43.80353772946597,18.204093377165158&z=15&output=embed",
+    mapsLink: "https://www.google.com/maps?q=43.80353772946597,18.204093377165158",
   },
 
   amenities: [
