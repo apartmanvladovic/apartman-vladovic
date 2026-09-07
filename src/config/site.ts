@@ -42,9 +42,9 @@ export const site = {
       "Za sve koji žele ostati duže: kompletno opremljen apartman sa kuhinjom, spavaćim sobama i kupatilom, uz sve vanjske sadržaje.",
     capacity: { guests: 6, bedrooms: 2, bathrooms: 1, estateSize: "1.500 m²" },
     pricing: [
-      { label: "Ljetna sezona (jun – septembar)", price: "120 € / noć" },
-      { label: "Zimska sezona (decembar – mart)", price: "100 € / noć" },
-      { label: "Preostali period", price: "90 € / noć" },
+      { label: "Ljetna sezona (jun – septembar)", price: "140 € / noć" },
+      { label: "Zimska sezona (decembar – mart)", price: "120 € / noć" },
+      { label: "Preostali period", price: "110 € / noć" },
       { label: "Minimalan boravak", price: "2 noći" },
     ],
     houseRules: {
@@ -61,7 +61,7 @@ export const site = {
   location: {
     title: "Podnožje planine Igman",
     description:
-      "Objekat se nalazi u mirnom planinskom okruženju podno Igmana, okružen borovom šumom i livadama. Idealna polazna tačka za izlete na Igman, Veliku aleju i Vrelo Bosne, a ipak dovoljno blizu Sarajeva za dnevne posjete gradu.",
+      "Objekat se nalazi u mirnom planinskom okruženju podno Igmana, okružen borovom šumom i livadama. Idealna polazna tačka za izlete na Igman, Veliku aleju i Vrelo Bosne, a ipak dovoljno bli[...]",
     distances: [
       { label: "Centar Sarajeva", value: "cca 30 min vožnje" },
       { label: "Vrelo Bosne i Velika aleja", value: "cca 20 min vožnje" },
@@ -127,7 +127,7 @@ export const site = {
     "Čaše, tanjiri, pribor i salvete — sve što vam treba za ugodan boravak",
     "Roštilj pripremljen za korištenje — čist, spreman i provjeren",
     "Ćumur i potpaljivač — pripremljeno za korištenje roštilja",
-    "Šadrvan pripremljen — čist i spreman za vaše druženje",
+    "Šadrvan pripremljen — čist i spreman za vaše društvo",
     "Ležaljke i suncobrani pripremljeni — sve podešeno, spremno za uživanje",
     "Završno čišćenje uključeno — vi uživajte, mi se pobrinemo za čistoću",
     "Mogućnost nabavke ostalih stvari — po vašoj narudžbi, sve što vam zatreba",
@@ -253,7 +253,7 @@ export const site = {
     title: "NAJVAŽNIJE – UŽIVAJTE!",
     text: "Vikendica AQUA je mjesto za odmor, druženje i uživanje. Mi ćemo se pobrinuti za detalje, a vaše je samo da dođete, opustite se i uživate.",
     signature: "Vaš privatni kutak mira – 20 minuta od Sarajeva.",
-    closers: ["Vi samo dođete. Uživanje može početi odmah!", "Uživaj. Odmori se. Poveži se."],
+    closers: ["Vi samo dođite. Uživanje može početi odmah!", "Uživaj. Odmori se. Poveži se."],
   },
 
   footerRules: [
