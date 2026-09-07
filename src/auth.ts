@@ -9,6 +9,7 @@ import type { Session } from "next-auth";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [Google],
+  pages: { error: "/auth-error" },
 });
 
 export function isAdmin(session: Session | null): boolean {
