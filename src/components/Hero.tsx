@@ -8,13 +8,13 @@ export function Hero() {
   return (
     <section id="vrh" className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:gap-16">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
           Kuća sa privatnim bazenom · Igman
         </p>
-        <h1 className="mt-5 font-display text-5xl font-light leading-[1.05] tracking-tight text-forest-700 sm:text-6xl">
+        <h1 className="mt-5 text-5xl font-light leading-[1.05] tracking-tight text-brand-700 sm:text-6xl">
           {site.name}
         </h1>
-        <p className="mt-6 max-w-lg text-lg leading-relaxed text-forest-950/70">
+        <p className="mt-6 max-w-lg text-lg leading-relaxed text-brand-950/70">
           {site.tagline}. Mir, svjež planinski zrak i privatni bazen u vlastitom
           dvorištu, okružen livadom i borovom šumom. Cijeli objekat je vaš za
           vrijeme boravka.
@@ -23,14 +23,14 @@ export function Hero() {
         <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <a
             href="#kalendar"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-700 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-orange-800"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"
           >
             <CalendarCheck className="h-4 w-4" aria-hidden />
             Provjeri dostupnost
           </a>
           <a
             href="#galerija"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-forest-950/15 px-7 py-3.5 text-sm font-semibold text-forest-700 transition-colors hover:border-forest-700"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-950/15 px-7 py-3.5 text-sm font-semibold text-brand-700 transition-colors hover:border-brand-700"
           >
             <Images className="h-4 w-4" aria-hidden />
             Pogledaj galeriju

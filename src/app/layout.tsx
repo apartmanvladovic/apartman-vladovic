@@ -1,20 +1,15 @@
 import type { Metadata } from "next";
-import { Mulish, Newsreader } from "next/font/google";
+import { Figtree } from "next/font/google";
 
 import { site } from "@/config/site";
 import { heroImage } from "@/lib/images";
 
 import "./globals.css";
 
-const mulish = Mulish({
+const figtree = Figtree({
   subsets: ["latin", "latin-ext"],
-  variable: "--font-mulish",
-});
-
-const newsreader = Newsreader({
-  subsets: ["latin", "latin-ext"],
-  weight: ["300", "400"],
-  variable: "--font-newsreader",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-figtree",
 });
 
 const siteUrl =
@@ -43,7 +38,7 @@ export const metadata: Metadata = {
     siteName: site.name,
     title: `${site.name} — ${site.tagline}`,
     description: site.description,
-    images: [{ url: heroImage.src, width: 2000, height: 1125, alt: heroImage.alt }],
+    images: [{ url: heroImage.src, width: 1200, height: 900, alt: heroImage.alt }],
   },
   robots: { index: true, follow: true },
 };
@@ -52,8 +47,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="bs" className={`${mulish.variable} ${newsreader.variable}`}>
-      <body className="bg-mist-50 font-sans text-forest-950 antialiased">
+    <html lang="bs" className={figtree.variable}>
+      <body className="bg-mist-50 font-sans text-brand-950 antialiased">
         {children}
       </body>
     </html>

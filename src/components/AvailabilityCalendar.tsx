@@ -83,14 +83,14 @@ export function AvailabilityCalendar({ bookedDates }: AvailabilityCalendarProps)
 
   function cellClass(iso: string): string {
     if (iso < today)
-      return "bg-transparent text-forest-950/25 cursor-default";
+      return "bg-transparent text-brand-950/25 border border-transparent cursor-default";
     if (booked.has(iso))
-      return "bg-red-200/70 text-red-800 line-through cursor-not-allowed";
+      return "bg-red-200 text-red-800 border border-red-400 line-through cursor-not-allowed";
     if (iso === checkIn || (checkOut && iso === checkOut))
-      return "bg-forest-500 text-white font-bold hover:bg-forest-600";
+      return "bg-green-700 text-white border border-green-700 font-bold hover:bg-green-800";
     if (checkIn && checkOut && iso > checkIn && iso < checkOut)
-      return "bg-forest-200/70 text-forest-800 hover:bg-forest-200";
-    return "bg-forest-100/80 text-forest-700 hover:bg-forest-200";
+      return "bg-green-200 text-green-900 border border-green-300 hover:bg-green-300";
+    return "bg-green-100 text-green-800 border border-green-300 hover:bg-green-200";
   }
 
   const nights =
@@ -109,14 +109,14 @@ export function AvailabilityCalendar({ bookedDates }: AvailabilityCalendarProps)
           description="Odaberite datum dolaska, zatim datum odlaska — termin se automatski prenosi u formu za upit ispod."
         />
 
-        <div className="rounded border border-forest-950/10 bg-white p-4 shadow-sm sm:p-6">
+        <div className="rounded border border-brand-950/10 bg-white p-4 shadow-sm sm:p-6">
           <div className="mb-5 flex items-center justify-between">
             <button
               type="button"
               aria-label="Prethodni mjesec"
               disabled={offset === 0}
               onClick={() => setOffset((o) => Math.max(0, o - 1))}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-forest-950/15 text-forest-700 transition-colors hover:border-forest-700 disabled:cursor-default disabled:opacity-30"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-950/15 text-brand-700 transition-colors hover:border-brand-700 disabled:cursor-default disabled:opacity-30"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -124,7 +124,7 @@ export function AvailabilityCalendar({ bookedDates }: AvailabilityCalendarProps)
               type="button"
               aria-label="Sljedeći mjesec"
               onClick={() => setOffset((o) => o + 1)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-forest-950/15 text-forest-700 transition-colors hover:border-forest-700"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-brand-950/15 text-brand-700 transition-colors hover:border-brand-700"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -133,14 +133,14 @@ export function AvailabilityCalendar({ bookedDates }: AvailabilityCalendarProps)
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {months.map(({ year, month, cells }) => (
               <div key={`${year}-${month}`} className="[&:nth-child(n+3)]:hidden lg:[&:nth-child(n+3)]:block [&:nth-child(n+2)]:hidden sm:[&:nth-child(n+2)]:block">
-                <p className="mb-3 text-center font-display text-lg text-forest-700">
+                <p className="mb-3 text-center text-lg text-brand-700">
                   {MONTHS[month]} {year}
                 </p>
                 <div className="mb-1.5 grid grid-cols-7 gap-1">
                   {WEEKDAYS.map((d) => (
                     <span
                       key={d}
-                      className="text-center text-[10px] font-semibold uppercase tracking-wider text-forest-950/40"
+                      className="text-center text-[10px] font-semibold uppercase tracking-wider text-brand-950/40"
                     >
                       {d}
                     </span>
@@ -167,22 +167,22 @@ export function AvailabilityCalendar({ bookedDates }: AvailabilityCalendarProps)
             ))}
           </div>
 
-          <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-forest-950/10 pt-5 sm:flex-row">
+          <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-brand-950/10 pt-5 sm:flex-row">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
               <span className="flex items-center gap-2">
-                <span className="h-3.5 w-3.5 rounded bg-forest-100/80" aria-hidden />
+                <span className="h-3.5 w-3.5 rounded bg-green-100 border border-green-300" aria-hidden />
                 Slobodno
               </span>
               <span className="flex items-center gap-2">
-                <span className="h-3.5 w-3.5 rounded bg-red-200/70" aria-hidden />
+                <span className="h-3.5 w-3.5 rounded bg-red-200 border border-red-400" aria-hidden />
                 Zauzeto
               </span>
               <span className="flex items-center gap-2">
-                <span className="h-3.5 w-3.5 rounded bg-forest-500" aria-hidden />
+                <span className="h-3.5 w-3.5 rounded bg-green-700" aria-hidden />
                 Vaš odabir
               </span>
             </div>
-            <p className="text-sm text-forest-950/70">
+            <p className="text-sm text-brand-950/70">
               {checkIn && checkOut
                 ? `${humanDate(checkIn)} → ${humanDate(checkOut)} · ${nights} ${nights === 1 ? "noć" : "noći"}`
                 : checkIn

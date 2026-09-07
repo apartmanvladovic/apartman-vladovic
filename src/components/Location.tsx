@@ -14,7 +14,7 @@ export function Location() {
         />
 
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="overflow-hidden rounded border border-forest-100 shadow-sm">
+          <div className="overflow-hidden rounded border border-brand-100 shadow-sm">
             <iframe
               title={`Mapa — ${site.name}`}
               src={site.location.mapEmbedUrl}
@@ -30,11 +30,11 @@ export function Location() {
               {site.location.distances.map((d) => (
                 <li
                   key={d.label}
-                  className="flex items-center gap-4 rounded border border-forest-100 bg-white p-4 shadow-sm"
+                  className="flex items-center gap-4 rounded border border-brand-100 bg-white p-4 shadow-sm"
                 >
-                  <MapPin className="h-5 w-5 shrink-0 text-forest-500" aria-hidden />
-                  <span className="flex-1 text-forest-950/80">{d.label}</span>
-                  <span className="font-semibold text-forest-800">{d.value}</span>
+                  <MapPin className="h-5 w-5 shrink-0 text-brand-500" aria-hidden />
+                  <span className="flex-1 text-brand-950/80">{d.label}</span>
+                  <span className="font-semibold text-brand-800">{d.value}</span>
                 </li>
               ))}
             </ul>
@@ -43,7 +43,7 @@ export function Location() {
               href={site.location.mapsLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 inline-flex items-center gap-2 rounded-full border border-forest-300 px-5 py-2.5 text-sm font-semibold text-forest-700 transition-colors hover:bg-forest-50"
+              className="mt-6 inline-flex items-center gap-2 rounded-full border border-brand-300 px-5 py-2.5 text-sm font-semibold text-brand-700 transition-colors hover:bg-brand-50"
             >
               <ExternalLink className="h-4 w-4" aria-hidden />
               Otvori u Google mapama

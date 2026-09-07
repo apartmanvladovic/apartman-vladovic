@@ -48,13 +48,13 @@ const features = [
 
 export function Features() {
   return (
-    <section id="sadrzaji" className="scroll-mt-20 bg-forest-700 py-20 sm:py-28">
+    <section id="sadrzaji" className="scroll-mt-20 bg-brand-700 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-12 max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
             Sadržaji
           </p>
-          <h2 className="mt-3 font-display text-3xl font-light leading-tight tracking-tight text-mist-50 sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-light leading-tight tracking-tight text-mist-50 sm:text-4xl">
             Ono zbog čega se gosti vraćaju.
           </h2>
         </div>
@@ -65,8 +65,8 @@ export function Features() {
               key={title}
               className="rounded bg-white/[0.07] p-6 transition-colors hover:bg-white/[0.12]"
             >
-              <Icon className="h-6 w-6 text-amber-200" aria-hidden />
-              <h3 className="mt-4 font-display text-xl text-mist-50">
+              <Icon className="h-6 w-6 text-accent" aria-hidden />
+              <h3 className="mt-4 text-xl text-mist-50">
                 {title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-mist-50/70">

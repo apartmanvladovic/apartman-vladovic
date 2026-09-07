@@ -6,7 +6,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-forest-900 py-14 text-white/80">
+    <footer className="bg-brand-700 py-14 text-white/80">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 md:grid-cols-3">
         <div>
           <p className="flex items-center gap-2 text-lg font-semibold text-white">
@@ -37,7 +37,7 @@ export function Footer() {
           </h3>
           <ul className="mt-3 space-y-1.5 text-sm">
             <li>
-              <a href={`mailto:${site.contact.email}`} className="hover:text-white">
+              <a href={`mailto:\${site.contact.email}`} className="text-accent hover:text-white">
                 {site.contact.email}
               </a>
             </li>

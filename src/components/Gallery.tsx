@@ -48,7 +48,7 @@ export function Gallery() {
               key={img.src}
               type="button"
               onClick={() => setActive(i)}
-              className="group relative aspect-[4/3] overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-amber-700"
+              className="group relative aspect-[4/3] overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-accent"
             >
               <Image
                 src={img.src}
@@ -57,7 +57,7 @@ export function Gallery() {
                 sizes="(max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-forest-950/70 to-transparent px-3 pb-2 pt-8 text-left text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-brand-950/70 to-transparent px-3 pb-2 pt-8 text-left text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
                 {img.category}
               </span>
             </button>
@@ -70,7 +70,7 @@ export function Gallery() {
           role="dialog"
           aria-modal="true"
           aria-label={galleryImages[active].alt}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-forest-950/90 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-brand-950/90 p-4"
           onClick={close}
         >
           <button

@@ -13,7 +13,7 @@ type Status =
   | { kind: "error"; message: string };
 
 const inputClass =
-  "w-full rounded border border-forest-950/15 bg-white px-3 py-2.5 text-sm text-forest-950 placeholder:text-forest-950/40 focus:border-forest-400 focus:outline-none focus:ring-1 focus:ring-forest-400";
+  "w-full rounded border border-brand-950/15 bg-white px-3 py-2.5 text-sm text-brand-950 placeholder:text-brand-950/40 focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400";
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
@@ -71,28 +71,28 @@ export function ContactForm() {
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="mb-1 block text-sm font-medium text-forest-800">
+          <label htmlFor="name" className="mb-1 block text-sm font-medium text-brand-800">
             Ime i prezime *
           </label>
           <input id="name" name="name" type="text" required className={inputClass} />
           {err("name")}
         </div>
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium text-forest-800">
+          <label htmlFor="email" className="mb-1 block text-sm font-medium text-brand-800">
             Email adresa *
           </label>
           <input id="email" name="email" type="email" required className={inputClass} />
           {err("email")}
         </div>
         <div>
-          <label htmlFor="phone" className="mb-1 block text-sm font-medium text-forest-800">
+          <label htmlFor="phone" className="mb-1 block text-sm font-medium text-brand-800">
             Telefon
           </label>
           <input id="phone" name="phone" type="tel" className={inputClass} placeholder="+387 ..." />
           {err("phone")}
         </div>
         <div>
-          <label htmlFor="guests" className="mb-1 block text-sm font-medium text-forest-800">
+          <label htmlFor="guests" className="mb-1 block text-sm font-medium text-brand-800">
             Broj gostiju *
           </label>
           <select id="guests" name="guests" required defaultValue="" className={inputClass}>
@@ -108,7 +108,7 @@ export function ContactForm() {
           {err("guests")}
         </div>
         <div>
-          <label htmlFor="checkIn" className="mb-1 block text-sm font-medium text-forest-800">
+          <label htmlFor="checkIn" className="mb-1 block text-sm font-medium text-brand-800">
             Datum dolaska *
           </label>
           <input
@@ -123,7 +123,7 @@ export function ContactForm() {
           {err("checkIn")}
         </div>
         <div>
-          <label htmlFor="checkOut" className="mb-1 block text-sm font-medium text-forest-800">
+          <label htmlFor="checkOut" className="mb-1 block text-sm font-medium text-brand-800">
             Datum odlaska *
           </label>
           <input
@@ -140,7 +140,7 @@ export function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="message" className="mb-1 block text-sm font-medium text-forest-800">
+        <label htmlFor="message" className="mb-1 block text-sm font-medium text-brand-800">
           Poruka
         </label>
         <textarea
@@ -156,14 +156,14 @@ export function ContactForm() {
       <button
         type="submit"
         disabled={status.kind === "sending"}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-amber-700 px-7 py-3 font-semibold text-white transition-colors hover:bg-orange-700 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-7 py-3 font-semibold text-white transition-colors hover:bg-accent-dark disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
         <Send className="h-4 w-4" aria-hidden />
         {status.kind === "sending" ? "Slanje..." : "Pošalji upit"}
       </button>
 
       {status.kind === "success" && (
-        <p className="rounded bg-forest-50 px-4 py-3 text-sm text-forest-700">
+        <p className="rounded bg-brand-50 px-4 py-3 text-sm text-brand-700">
           Hvala! Vaš upit je poslan — javit ćemo se u naj kraćem roku.
         </p>
       )}

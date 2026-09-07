@@ -9,18 +9,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        forest: {
-          50: "#f2f7f4",
-          100: "#dcebe2",
-          200: "#b7d6c5",
-          300: "#8db9a3",
-          400: "#40916c",
-          500: "#2d6a4f",
-          600: "#245641",
-          700: "#1b4332",
-          800: "#153528",
-          900: "#102a20",
-          950: "#081711",
+        brand: {
+          50: "#f4f6f7",
+          100: "#e4e9ec",
+          200: "#c9d2d9",
+          300: "#a3b2bd",
+          400: "#778a99",
+          500: "#55697a",
+          600: "#445261",
+          700: "#333e49",
+          800: "#2a3440",
+          900: "#222b36",
+          950: "#151c24",
+        },
+        accent: {
+          DEFAULT: "#f7931f",
+          dark: "#dd8112",
         },
         mist: {
           50: "#fafaf9",
@@ -28,8 +32,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-mulish)", "system-ui", "sans-serif"],
-        display: ["var(--font-newsreader)", "Georgia", "serif"],
+        sans: ["var(--font-figtree)", "system-ui", "sans-serif"],
       },
     },
   },
