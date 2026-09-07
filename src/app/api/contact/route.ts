@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import { Resend } from "resend";
 
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 export const runtime = "nodejs";
 

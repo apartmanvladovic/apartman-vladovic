@@ -1,6 +1,6 @@
 import { Clock, Crown, ShieldCheck, Users } from "lucide-react";
 
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 const themes = {
   pine: {

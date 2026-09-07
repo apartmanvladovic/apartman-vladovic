@@ -1,4 +1,4 @@
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 export function Rules() {
   return (

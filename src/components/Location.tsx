@@ -1,7 +1,7 @@
 import { ExternalLink, MapPin } from "lucide-react";
 
 import { SectionHeading } from "@/components/SectionHeading";
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 export function Location() {
   return (

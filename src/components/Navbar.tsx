@@ -3,7 +3,7 @@
 import { Menu, Waves, X } from "lucide-react";
 import { useState } from "react";
 
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 const links = [
   { href: "#sadrzaji", label: "Sadržaji" },

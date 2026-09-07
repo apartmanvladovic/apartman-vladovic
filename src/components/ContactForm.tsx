@@ -4,7 +4,7 @@ import { MessageCircle, Send } from "lucide-react";
 import { useState } from "react";
 
 import { useBookingRange } from "@/components/BookingProvider";
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 type RentalType = "dnevni" | "nocenje";
 

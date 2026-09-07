@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree, Playfair_Display } from "next/font/google";
 
-import { site } from "@/config/site";
-import { heroImage } from "@/lib/images";
+import { heroImage, site } from "@/lib/content";
 
 import "./globals.css";
 

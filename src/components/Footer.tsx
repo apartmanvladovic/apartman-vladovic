@@ -1,6 +1,6 @@
 import { Ban, Leaf, ShowerHead, Sparkles, Users } from "lucide-react";
 
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 const ruleIcons = [ShowerHead, Users, Ban, Sparkles, Leaf];
 

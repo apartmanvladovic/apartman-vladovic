@@ -11,7 +11,7 @@ import {
   Wifi,
 } from "lucide-react";
 
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 const icons = [
   Waves,           // Privatni bazen

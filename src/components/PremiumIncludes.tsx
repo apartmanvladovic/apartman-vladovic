@@ -1,6 +1,6 @@
 import { Check } from "lucide-react";
 
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 export function PremiumIncludes() {
   return (

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
 import { SectionHeading } from "@/components/SectionHeading";
-import { galleryImages } from "@/lib/images";
+import { galleryImages } from "@/lib/content";
 
 export function Gallery() {
   const [active, setActive] = useState<number | null>(null);

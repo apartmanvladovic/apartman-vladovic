@@ -1,7 +1,6 @@
 import Image from "next/image";
 
-import { site } from "@/config/site";
-import { finaleImage } from "@/lib/images";
+import { finaleImage, site } from "@/lib/content";
 
 export function Finale() {
   return (

@@ -1,8 +1,7 @@
 import { Check, Phone, ThermometerSun } from "lucide-react";
 import Image from "next/image";
 
-import { site } from "@/config/site";
-import { heroImage } from "@/lib/images";
+import { heroImage, site } from "@/lib/content";
 
 export function Hero() {
   return (

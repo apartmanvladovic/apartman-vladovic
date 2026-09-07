@@ -1,6 +1,6 @@
 import { BellRing, GlassWater } from "lucide-react";
 
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 export function DrinksService() {
   const d = site.drinksService;

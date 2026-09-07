@@ -2,7 +2,7 @@ import { Bath, BedDouble, LandPlot, Users } from "lucide-react";
 
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
 import { SectionHeading } from "@/components/SectionHeading";
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 export function Overnight({ bookedDates }: { bookedDates: string[] }) {
   const o = site.overnight;

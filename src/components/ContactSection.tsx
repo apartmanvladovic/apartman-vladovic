@@ -1,7 +1,7 @@
 import { Clock, MessageCircle, Phone } from "lucide-react";
 
 import { ContactForm } from "@/components/ContactForm";
-import { site } from "@/config/site";
+import { site } from "@/lib/content";
 
 export function ContactSection() {
   const { phoneDisplay, phoneIntl } = site.contact;
