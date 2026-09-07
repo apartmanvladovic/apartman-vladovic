@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     default: `${site.name} — Privatni bazen za dnevni najam, 20 min od Sarajeva`,
     template: `%s | ${site.name}`,
   },
-  description: `${site.slogan} Dnevni najam privatne vikendice sa bazenom, ${site.location}. Bazen sa grijanjem, roštilj, šadrvan, mali nogomet i potpuna privatnost.`,
+  description: `${site.slogan} Dnevni najam i noćenje u privatnoj vikendici sa bazenom, ${site.tagline}. Bazen sa grijanjem, roštilj, šadrvan, mali nogomet i potpuna privatnost.`,
   keywords: [
     "vikendica",
     "bazen",

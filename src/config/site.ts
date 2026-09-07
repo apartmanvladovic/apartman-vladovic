@@ -6,7 +6,7 @@
 export const site = {
   name: "Vikendica AQUA",
   slogan: "Vaš privatni kutak mira, samo za vas.",
-  location: "20 minuta od Sarajeva",
+  tagline: "20 minuta od Sarajeva",
   hours: "09:00 – 20:00 h",
   cta: "Rezerviši svoj dan na vrijeme!",
 
@@ -17,11 +17,12 @@ export const site = {
 
   hero: {
     title: "VIKENDICA AQUA – Vaš privatni kutak mira",
-    subtitle: "20 min od Sarajeva | Dnevni najam 09:00 – 20:00 h",
+    subtitle: "20 min od Sarajeva | Dnevni najam 09:00 – 20:00 h ili noćenje",
     highlights: [
       "CIJELI DAN UŽIVANJA U PRIVATNOSTI!",
       "BEZ KORIŠTENJA UNUTRAŠNJOSTI KUĆE",
     ],
+
     intro:
       "Uživajte u bazenu, prirodi, druženju i svim sadržajima koje smo pripremili. Mi ćemo se pobrinuti za detalje, a vaše je samo da dođete i uživate.",
     heatingBadge: {
@@ -33,6 +34,44 @@ export const site = {
       "Idealno za porodice i društva",
       "Mir, priroda i potpuna privatnost",
     ],
+  },
+
+  overnight: {
+    title: "Noćenje — Apartman",
+    description:
+      "Za sve koji žele ostati duže: kompletno opremljen apartman sa kuhinjom, spavaćim sobama i kupatilom, uz sve vanjske sadržaje.",
+    capacity: { guests: 6, bedrooms: 2, bathrooms: 1, estateSize: "1.500 m²" },
+    pricing: [
+      { label: "Ljetna sezona (jun – septembar)", price: "120 € / noć" },
+      { label: "Zimska sezona (decembar – mart)", price: "100 € / noć" },
+      { label: "Preostali period", price: "90 € / noć" },
+      { label: "Minimalan boravak", price: "2 noći" },
+    ],
+    houseRules: {
+      checkIn: "od 14:00",
+      checkOut: "do 10:00",
+      notes: [
+        "Kućni ljubimci po dogovoru",
+        "Zabave i događaji nisu dozvoljeni",
+        "Bazen se koristi na vlastitu odgovornost",
+      ],
+    },
+  },
+
+  location: {
+    title: "Podnožje planine Igman",
+    description:
+      "Objekat se nalazi u mirnom planinskom okruženju podno Igmana, okružen borovom šumom i livadama. Idealna polazna tačka za izlete na Igman, Veliku aleju i Vrelo Bosne, a ipak dovoljno blizu Sarajeva za dnevne posjete gradu.",
+    distances: [
+      { label: "Centar Sarajeva", value: "cca 30 min vožnje" },
+      { label: "Vrelo Bosne i Velika aleja", value: "cca 20 min vožnje" },
+      { label: "Planinske staze Igmana", value: "5 – 15 min" },
+      { label: "Aerodrom Sarajevo", value: "cca 25 min vožnje" },
+    ],
+    // Google Maps embed (bez API ključa) — zamijeniti tačnom lokacijom.
+    mapEmbedUrl:
+      "https://www.google.com/maps?q=Igman%20Bosna%20i%20Hercegovina&z=12&output=embed",
+    mapsLink: "https://www.google.com/maps?q=Igman+Bosna+i+Hercegovina",
   },
 
   amenities: [

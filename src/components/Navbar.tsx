@@ -7,11 +7,12 @@ import { site } from "@/config/site";
 
 const links = [
   { href: "#sadrzaji", label: "Sadržaji" },
-  { href: "#paketi", label: "Paketi" },
+  { href: "#galerija", label: "Galerija" },
+  { href: "#paketi", label: "Dnevni najam" },
+  { href: "#nocenje", label: "Noćenje" },
   { href: "#pravila", label: "Pravila" },
-  { href: "#kontakt", label: "Kontakt" },
+  { href: "#lokacija", label: "Lokacija" },
 ];
-
 export function Navbar() {
   const [open, setOpen] = useState(false);
 

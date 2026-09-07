@@ -38,7 +38,7 @@ export function Footer() {
           >
             {site.contact.phoneDisplay}
           </a>
-          <p className="text-cream-50/60">{site.location} · Dnevni najam {site.hours}</p>
+          <p className="text-cream-50/60">{site.tagline} · Dnevni najam {site.hours}</p>
         </div>
       </div>
 

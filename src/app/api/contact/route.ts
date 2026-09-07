@@ -7,10 +7,13 @@ import { site } from "@/config/site";
 export const runtime = "nodejs";
 
 interface ContactPayload {
+  type: "dnevni" | "nocenje";
   name: string;
   phone: string;
-  date: string;
-  packageId: string;
+  date?: string;
+  checkIn?: string;
+  checkOut?: string;
+  packageId?: string;
   guests: number;
   order?: string;
   message?: string;
@@ -25,6 +28,7 @@ function todayISO(): string {
 
 function validate(body: Partial<ContactPayload>): Record<string, string> {
   const errors: Record<string, string> = {};
+  const today = todayISO();
 
   if (!body.name || body.name.trim().length < 2) {
     errors.name = "Unesite ime i prezime.";
@@ -32,19 +36,39 @@ function validate(body: Partial<ContactPayload>): Record<string, string> {
   if (!body.phone || body.phone.replace(/[^\d+]/g, "").length < 6) {
     errors.phone = "Unesite ispravan broj telefona.";
   }
-  if (!body.date || !ISO_DATE.test(body.date)) {
-    errors.date = "Odaberite datum.";
-  } else if (body.date < todayISO()) {
-    errors.date = "Datum ne može biti u prošlosti.";
-  }
-  const pkg = site.packages.find((p) => p.id === body.packageId);
-  if (!pkg) {
-    errors.packageId = "Odaberite paket.";
-  } else {
-    const guests = Number(body.guests);
-    if (!Number.isInteger(guests) || guests < 1 || guests > pkg.capacity) {
-      errors.guests = `Broj osoba za odabrani paket mora biti između 1 i ${pkg.capacity}.`;
+
+  let guestLimit: number = site.overnight.capacity.guests;
+
+  if (body.type === "dnevni") {
+    if (!body.date || !ISO_DATE.test(body.date)) {
+      errors.date = "Odaberite datum.";
+    } else if (body.date < today) {
+      errors.date = "Datum ne može biti u prošlosti.";
     }
+    const pkg = site.packages.find((p) => p.id === body.packageId);
+    if (!pkg) {
+      errors.packageId = "Odaberite paket.";
+    } else {
+      guestLimit = pkg.capacity;
+    }
+  } else if (body.type === "nocenje") {
+    if (!body.checkIn || !ISO_DATE.test(body.checkIn)) {
+      errors.checkIn = "Odaberite datum dolaska.";
+    } else if (body.checkIn < today) {
+      errors.checkIn = "Datum dolaska ne može biti u prošlosti.";
+    }
+    if (!body.checkOut || !ISO_DATE.test(body.checkOut)) {
+      errors.checkOut = "Odaberite datum odlaska.";
+    } else if (body.checkIn && body.checkOut <= body.checkIn) {
+      errors.checkOut = "Datum odlaska mora biti nakon datuma dolaska.";
+    }
+  } else {
+    errors.type = "Odaberite vrstu najma.";
+  }
+
+  const guests = Number(body.guests);
+  if (!Number.isInteger(guests) || guests < 1 || guests > guestLimit) {
+    errors.guests = `Broj osoba mora biti između 1 i ${guestLimit}.`;
   }
   if (body.message && body.message.length > 2000) {
     errors.message = "Poruka je preduga (maks. 2000 karaktera).";
@@ -65,25 +89,26 @@ function buildEmailHtml(p: ContactPayload): string {
   const pkg = site.packages.find((x) => x.id === p.packageId);
   const row = (label: string, value: string) =>
     `<tr><td style="padding:6px 12px;color:#555;vertical-align:top">${label}</td><td style="padding:6px 12px"><strong>${value}</strong></td></tr>`;
+  const termRows =
+    p.type === "dnevni"
+      ? row("Datum", p.date ?? "—") +
+        row("Paket", pkg ? `${pkg.name} (do ${pkg.capacity} osoba)` : "—") +
+        row("Dodatna narudžba", escapeHtml(p.order || "—"))
+      : row("Check-in", p.checkIn ?? "—") + row("Check-out", p.checkOut ?? "—");
   return `
     <h2 style="color:#0f3d2e">Novi upit za rezervaciju — ${site.name}</h2>
     <table style="border-collapse:collapse;font-family:sans-serif">
+      ${row("Vrsta najma", p.type === "dnevni" ? "Dnevni najam (09–20 h)" : "Noćenje")}
       ${row("Ime i prezime", escapeHtml(p.name))}
       ${row("Telefon", `<a href="tel:${escapeHtml(p.phone)}">${escapeHtml(p.phone)}</a>`)}
-      ${row("Datum", p.date)}
-      ${row("Paket", pkg ? `${pkg.name} (do ${pkg.capacity} osoba)` : p.packageId)}
+      ${termRows}
       ${row("Broj osoba", String(p.guests))}
-      ${row("Dodatna narudžba", escapeHtml(p.order || "—"))}
     </table>
     <p style="font-family:sans-serif"><strong>Poruka:</strong><br/>${escapeHtml(p.message || "—").replace(/\n/g, "<br/>")}</p>
   `;
 }
 
-async function sendWithResend(
-  to: string,
-  subject: string,
-  html: string,
-): Promise<void> {
+async function sendWithResend(to: string, subject: string, html: string): Promise<void> {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { error } = await resend.emails.send({
     from: process.env.EMAIL_FROM ?? `${site.name} <onboarding@resend.dev>`,
@@ -94,11 +119,7 @@ async function sendWithResend(
   if (error) throw new Error(error.message);
 }
 
-async function sendWithSmtp(
-  to: string,
-  subject: string,
-  html: string,
-): Promise<void> {
+async function sendWithSmtp(to: string, subject: string, html: string): Promise<void> {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT ?? 465),
@@ -147,8 +168,9 @@ export async function POST(request: Request) {
     );
   }
 
-  const pkg = site.packages.find((p) => p.id === payload.packageId);
-  const subject = `Rezervacija ${payload.date} — ${pkg?.name ?? payload.packageId} (${payload.name})`;
+  const termin =
+    payload.type === "dnevni" ? payload.date : `${payload.checkIn} → ${payload.checkOut}`;
+  const subject = `Rezervacija (${payload.type === "dnevni" ? "dnevni najam" : "noćenje"}) ${termin} — ${payload.name}`;
   const html = buildEmailHtml(payload);
 
   try {
