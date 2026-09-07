@@ -29,12 +29,29 @@
   "overnight": {
     "title": "Noćenje — Apartman",
     "description": "Za sve koji žele ostati duže: kompletno opremljen apartman sa kuhinjom, spavaćim sobama i kupatilom, uz sve vanjske sadržaje.",
-    "capacity": { "guests": 6, "bedrooms": 2, "bathrooms": 1, "estateSize": "1.500 m²" },
+    "capacity": {
+      "guests": 6,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "estateSize": "1.500 m²"
+    },
     "pricing": [
-      { "label": "Ljetna sezona (jun – septembar)", "price": "140 € / noć" },
-      { "label": "Zimska sezona (decembar – mart)", "price": "120 € / noć" },
-      { "label": "Preostali period", "price": "110 € / noć" },
-      { "label": "Minimalan boravak", "price": "2 noći" }
+      {
+        "label": "Ljetna sezona (jun – septembar)",
+        "price": "120 € / noć"
+      },
+      {
+        "label": "Zimska sezona (decembar – mart)",
+        "price": "100 € / noć"
+      },
+      {
+        "label": "Preostali period",
+        "price": "90 € / noć"
+      },
+      {
+        "label": "Minimalan boravak",
+        "price": "2 noći"
+      }
     ],
     "houseRules": {
       "checkIn": "od 14:00",
@@ -50,10 +67,22 @@
     "title": "Podnožje planine Igman",
     "description": "Objekat se nalazi u mirnom planinskom okruženju podno Igmana, okružen borovom šumom i livadama. Idealna polazna tačka za izlete na Igman, Veliku aleju i Vrelo Bosne, a ipak dovoljno blizu Sarajeva za dnevne posjete gradu.",
     "distances": [
-      { "label": "Centar Sarajeva", "value": "cca 30 min vožnje" },
-      { "label": "Vrelo Bosne i Velika aleja", "value": "cca 20 min vožnje" },
-      { "label": "Planinske staze Igmana", "value": "5 – 15 min" },
-      { "label": "Aerodrom Sarajevo", "value": "cca 25 min vožnje" }
+      {
+        "label": "Centar Sarajeva",
+        "value": "cca 30 min vožnje"
+      },
+      {
+        "label": "Vrelo Bosne i Velika aleja",
+        "value": "cca 20 min vožnje"
+      },
+      {
+        "label": "Planinske staze Igmana",
+        "value": "5 – 15 min"
+      },
+      {
+        "label": "Aerodrom Sarajevo",
+        "value": "cca 25 min vožnje"
+      }
     ],
     "mapEmbedUrl": "https://www.google.com/maps?q=43.80353772946597,18.204093377165158&z=15&output=embed",
     "mapsLink": "https://www.google.com/maps?q=43.80353772946597,18.204093377165158"
@@ -96,11 +125,11 @@
       "name": "Premium paket",
       "capacity": 10,
       "theme": "gold",
-      "badge": "Najpopularnije",
       "weekdayPrice": "450 KM",
       "weekendPrice": "550 KM",
       "deposit": "200 KM",
-      "note": "Završno čišćenje uključeno u Premium paket."
+      "note": "Završno čišćenje uključeno u Premium paket.",
+      "badge": "Najpopularnije"
     }
   ],
   "premiumIncludes": [
@@ -117,7 +146,13 @@
   "drinksService": {
     "title": "Želite da vas sve čeka spremno?",
     "text": "Nema potrebe da prije dolaska obilazite prodavnice. Po vašoj narudžbi možemo pripremiti pića i ostale potrebne stvari za vaš boravak.",
-    "available": ["Sokovi", "Voda", "Pivo", "Vino", "Ostalo po dogovoru"],
+    "available": [
+      "Sokovi",
+      "Voda",
+      "Pivo",
+      "Vino",
+      "Ostalo po dogovoru"
+    ],
     "condition": "Najava najmanje 12 sati ranije.",
     "note": "Meso, alkohol i ostale namirnice nisu uključene u cijenu. Nabavka se vrši isključivo po prethodnoj narudžbi i gost je plaća posebno.",
     "message": "Vi samo dođite – mi ćemo se pobrinuti za ostalo."
@@ -151,7 +186,6 @@
     },
     {
       "title": "Obavezno tuširanje prije i poslije bazena",
-      "highlight": "TUŠIRANJE PRIJE ULASKA U BAZEN JE OBAVEZNO.",
       "items": [
         "Prije svakog ulaska u bazen potrebno je temeljno isprati tijelo.",
         "Posebno je važno ukloniti znoj, prašinu, ulja, losione i ostatke kozmetičkih proizvoda.",
@@ -159,7 +193,8 @@
         "Nije dozvoljen ulazak u bazen neposredno nakon nanošenja kreme, ulja ili losiona.",
         "Nakon korištenja bazena molimo goste da se ponovo istuširaju."
       ],
-      "footer": "Čist bazen = ugodniji boravak za sve."
+      "footer": "Čist bazen = ugodniji boravak za sve.",
+      "highlight": "TUŠIRANJE PRIJE ULASKA U BAZEN JE OBAVEZNO."
     },
     {
       "title": "Korištenje vanjskog prostora",
@@ -232,7 +267,10 @@
     "title": "NAJVAŽNIJE – UŽIVAJTE!",
     "text": "Vikendica AQUA je mjesto za odmor, druženje i uživanje. Mi ćemo se pobrinuti za detalje, a vaše je samo da dođete, opustite se i uživate.",
     "signature": "Vaš privatni kutak mira – 20 minuta od Sarajeva.",
-    "closers": ["Vi samo dođite. Uživanje može početi odmah!", "Uživaj. Odmori se. Poveži se."]
+    "closers": [
+      "Vi samo dođite. Uživanje može početi odmah!",
+      "Uživaj. Odmori se. Poveži se."
+    ]
   },
   "footerRules": [
     "Tuširajte se prije i poslije korištenja bazena",
@@ -242,15 +280,45 @@
     "Čuvajmo prirodu i okolinu"
   ],
   "images": {
-    "hero": { "src": "/images/hero.jpg", "alt": "Kuća i bazen u dvorištu" },
-    "finale": { "src": "/images/dvoriste-vece.jpg", "alt": "Dvorište u večernjim satima" },
+    "hero": {
+      "src": "/images/hero.jpg",
+      "alt": "Kuća i bazen u dvorištu"
+    },
+    "finale": {
+      "src": "/images/dvoriste-vece.jpg",
+      "alt": "Dvorište u večernjim satima"
+    },
     "gallery": [
-      { "src": "/images/bazen-1.jpg", "alt": "Privatni bazen na otvorenom", "category": "Bazen" },
-      { "src": "/images/bazen-2.jpg", "alt": "Bazen s ležaljkama i suncobranima", "category": "Bazen" },
-      { "src": "/images/terasa-rostilj.jpg", "alt": "Terasa s roštiljem", "category": "Terasa i roštilj" },
-      { "src": "/images/rostilj.jpg", "alt": "Zidani roštilj", "category": "Terasa i roštilj" },
-      { "src": "/images/terasa.jpg", "alt": "Terasa u zelenilu", "category": "Terasa i roštilj" },
-      { "src": "/images/dvoriste.jpg", "alt": "Roštilnica i uređeno dvorište", "category": "Dvorište" }
+      {
+        "src": "/images/bazen-1.jpg",
+        "alt": "Privatni bazen na otvorenom",
+        "category": "Bazen"
+      },
+      {
+        "src": "/images/bazen-2.jpg",
+        "alt": "Bazen s ležaljkama i suncobranima",
+        "category": "Bazen"
+      },
+      {
+        "src": "/images/terasa-rostilj.jpg",
+        "alt": "Terasa s roštiljem",
+        "category": "Terasa i roštilj"
+      },
+      {
+        "src": "/images/rostilj.jpg",
+        "alt": "Zidani roštilj",
+        "category": "Terasa i roštilj"
+      },
+      {
+        "src": "/images/terasa.jpg",
+        "alt": "Terasa u zelenilu",
+        "category": "Terasa i roštilj"
+      },
+      {
+        "src": "/images/dvoriste.jpg",
+        "alt": "Roštilnica i uređeno dvorište",
+        "category": "Dvorište"
+      }
     ]
   }
 }
