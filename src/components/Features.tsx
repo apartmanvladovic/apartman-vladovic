@@ -1,79 +1,59 @@
 import {
   Car,
+  Droplets,
+  Fence,
   Flame,
-  FlameKindling,
-  Mountain,
-  Trees,
+  Goal,
+  ThermometerSun,
+  Umbrella,
+  Volleyball,
   Waves,
   Wifi,
 } from "lucide-react";
 
-const features = [
-  {
-    icon: Waves,
-    title: "Privatni bazen na livadi",
-    description:
-      "Bazen sa ležaljkama u vlastitom dvorištu, zaklonjen zelenilom i namijenjen isključivo gostima kuće.",
-  },
-  {
-    icon: Trees,
-    title: "Veliko dvorište i livada",
-    description:
-      "Prostrano ograđeno imanje idealno za odmor, igru i boravak u prirodi.",
-  },
-  {
-    icon: Flame,
-    title: "Vanjski roštilj i terasa",
-    description:
-      "Terasa sa velikim stolom uz bazen, roštilj i vanjska rasvjeta za večeri na otvorenom.",
-  },
-  {
-    icon: Mountain,
-    title: "Pogled na šumu i planinu",
-    description: "Jutarnja kafa uz pogled na borovu šumu i vrhove Igmana.",
-  },
-  {
-    icon: Wifi,
-    title: "Wi-Fi i privatni parking",
-    description:
-      "Besplatan brzi internet u cijeloj kući i osigurano parking mjesto u dvorištu.",
-  },
-  {
-    icon: FlameKindling,
-    title: "Grijanje i kamin",
-    description:
-      "Ugodan planinski enterijer sa drvenim detaljima, topao i u zimskim mjesecima.",
-  },
+import { site } from "@/config/site";
+
+const icons = [
+  Waves,           // Privatni bazen
+  Umbrella,        // Ležaljke i suncobrani
+  Droplets,        // Šadrvan
+  Flame,           // Vanjski roštilj
+  Goal,            // Mali nogomet
+  Volleyball,      // Odbojka
+  Car,             // Parking
+  Wifi,            // Wi-Fi
+  Fence,           // Potpuno ograđeno dvorište
+  ThermometerSun,  // Grijanje u bazenu
 ];
 
 export function Features() {
   return (
-    <section id="sadrzaji" className="scroll-mt-20 bg-brand-700 py-20 sm:py-28">
+    <section id="sadrzaji" className="scroll-mt-20 bg-pine-700 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-12 max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">
             Sadržaji
           </p>
-          <h2 className="mt-3 text-3xl font-light leading-tight tracking-tight text-mist-50 sm:text-4xl">
-            Ono zbog čega se gosti vraćaju.
+          <h2 className="mt-3 font-display text-3xl font-semibold leading-tight text-cream-50 sm:text-4xl">
+            Sve što treba za savršen dan.
           </h2>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map(({ icon: Icon, title, description }) => (
-            <div
-              key={title}
-              className="rounded bg-white/[0.07] p-6 transition-colors hover:bg-white/[0.12]"
-            >
-              <Icon className="h-6 w-6 text-accent" aria-hidden />
-              <h3 className="mt-4 text-xl text-mist-50">
-                {title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-mist-50/70">
-                {description}
-              </p>
-            </div>
-          ))}
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          {site.amenities.map((label, i) => {
+            const Icon = icons[i];
+            return (
+              <div
+                key={label}
+                className="flex flex-col items-center gap-3 rounded bg-white/[0.07] p-5 text-center transition-colors hover:bg-white/[0.12]"
+              >
+                <Icon className="h-7 w-7 text-gold-light" aria-hidden />
+                <span className="text-sm font-medium leading-snug text-cream-50/90">
+                  {label}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>

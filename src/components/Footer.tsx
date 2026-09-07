@@ -1,57 +1,48 @@
-import { Mountain } from "lucide-react";
+import { Ban, Leaf, ShowerHead, Sparkles, Users } from "lucide-react";
 
 import { site } from "@/config/site";
+
+const ruleIcons = [ShowerHead, Users, Ban, Sparkles, Leaf];
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-brand-700 py-14 text-white/80">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 sm:px-6 md:grid-cols-3">
-        <div>
-          <p className="flex items-center gap-2 text-lg font-semibold text-white">
-            <Mountain className="h-5 w-5" aria-hidden />
-            {site.name}
-          </p>
-          <p className="mt-3 max-w-xs text-sm leading-relaxed">
-            {site.tagline}.
-          </p>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
-            Pravila kuće
-          </h3>
-          <ul className="mt-3 space-y-1.5 text-sm">
-            <li>Prijava (check-in) {site.houseRules.checkIn}</li>
-            <li>Odjava (check-out) {site.houseRules.checkOut}</li>
-            {site.houseRules.notes.map((n) => (
-              <li key={n}>{n}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-white">
-            Kontakt
-          </h3>
-          <ul className="mt-3 space-y-1.5 text-sm">
-            <li>
-              <a href={`mailto:\${site.contact.email}`} className="text-accent hover:text-white">
-                {site.contact.email}
-              </a>
-            </li>
-            <li>
-              <a href={`tel:+${site.contact.phoneIntl}`} className="hover:text-white">
-                {site.contact.phoneDisplay}
-              </a>
-            </li>
-            <li>{site.location.title}</li>
-          </ul>
+    <footer className="bg-pine-950 text-cream-50/80">
+      {/* Traka sa 5 ključnih pravila */}
+      <div className="border-b border-white/10">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-12 sm:grid-cols-3 sm:px-6 lg:grid-cols-5">
+          {site.footerRules.map((rule, i) => {
+            const Icon = ruleIcons[i];
+            return (
+              <div key={rule} className="flex flex-col items-center gap-3 text-center">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-gold/40 bg-gold/10">
+                  <Icon className="h-5 w-5 text-gold-light" aria-hidden />
+                </span>
+                <p className="text-xs leading-relaxed text-cream-50/70">{rule}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      <div className="mx-auto mt-12 max-w-6xl border-t border-white/10 px-4 pt-6 text-center text-xs text-white/50 sm:px-6">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-4 py-12 text-center sm:px-6">
+        <p className="font-display text-2xl font-semibold text-cream-50">
+          {site.name}
+        </p>
+        <p className="max-w-md text-sm leading-relaxed">{site.slogan}</p>
+        <div className="flex flex-col items-center gap-2 text-sm">
+          <a
+            href={`tel:+${site.contact.phoneIntl}`}
+            className="text-lg font-semibold text-gold-light hover:text-gold"
+          >
+            {site.contact.phoneDisplay}
+          </a>
+          <p className="text-cream-50/60">{site.location} · Dnevni najam {site.hours}</p>
+        </div>
+      </div>
+
+      <div className="border-t border-white/10 py-5 text-center text-xs text-cream-50/50">
         © {year} {site.name}. Sva prava zadržana.
       </div>
     </footer>

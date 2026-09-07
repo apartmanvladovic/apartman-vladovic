@@ -1,31 +1,29 @@
-import { About } from "@/components/About";
-import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
-import { BookingProvider } from "@/components/BookingProvider";
 import { ContactSection } from "@/components/ContactSection";
+import { DrinksService } from "@/components/DrinksService";
 import { Features } from "@/components/Features";
+import { Finale } from "@/components/Finale";
 import { Footer } from "@/components/Footer";
-import { Gallery } from "@/components/Gallery";
 import { Hero } from "@/components/Hero";
-import { Location } from "@/components/Location";
 import { Navbar } from "@/components/Navbar";
-import { getBookedDates } from "@/lib/calendar";
+import { Packages } from "@/components/Packages";
+import { PremiumIncludes } from "@/components/PremiumIncludes";
+import { Rules } from "@/components/Rules";
 
-export default async function Home() {
-  const booked = await getBookedDates();
-
+export default function Home() {
   return (
-    <BookingProvider>
+    <>
       <Navbar />
       <main>
         <Hero />
-        <About />
         <Features />
-        <Gallery />
-        <AvailabilityCalendar bookedDates={[...booked]} />
+        <Packages />
+        <PremiumIncludes />
+        <DrinksService />
+        <Rules />
+        <Finale />
         <ContactSection />
-        <Location />
       </main>
       <Footer />
-    </BookingProvider>
+    </>
   );
 }

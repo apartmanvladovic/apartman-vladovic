@@ -1,30 +1,17 @@
 /**
- * Fotografije objekta u public/images/. Trenutne su placeholderi iz
- * dizajn prototipa — zamijenite ih pravim slikama istih naziva fajlova
- * (ili promijenite putanje ovdje).
+ * Placeholder fotografije (Unsplash) — zamijenite pravim slikama.
+ * Prave slike stavite u public/images/ i ovdje promijenite "src".
  */
 
-export interface GalleryImage {
-  src: string;
-  alt: string;
-  category: string;
-}
+const unsplash = (id: string, w = 1600) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
 
 export const heroImage = {
-  src: "/images/hero.jpg",
-  alt: "Kuća i bazen u dvorištu",
+  src: unsplash("photo-1572331165267-854da2b10ccc", 2000),
+  alt: "Privatni bazen okružen zelenilom",
 };
 
-export const aboutImage = {
-  src: "/images/dvoriste.jpg",
-  alt: "Roštilnica i uređeno dvorište",
+export const finaleImage = {
+  src: unsplash("photo-1540541338287-41700207dee6", 2000),
+  alt: "Opuštanje uz bazen u prirodi",
 };
-
-export const galleryImages: GalleryImage[] = [
-  { src: "/images/bazen-1.jpg", alt: "Privatni bazen na otvorenom", category: "Bazen" },
-  { src: "/images/bazen-2.jpg", alt: "Bazen s ležaljkama i suncobranima", category: "Bazen" },
-  { src: "/images/terasa-rostilj.jpg", alt: "Terasa s roštiljem", category: "Terasa i roštilj" },
-  { src: "/images/rostilj.jpg", alt: "Zidani roštilj", category: "Terasa i roštilj" },
-  { src: "/images/terasa.jpg", alt: "Terasa u zelenilu", category: "Terasa i roštilj" },
-  { src: "/images/dvoriste-vece.jpg", alt: "Dvorište u večernjim satima", category: "Dvorište" },
-];

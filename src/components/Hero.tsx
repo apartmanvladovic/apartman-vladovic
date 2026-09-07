@@ -1,4 +1,4 @@
-import { CalendarCheck, Images } from "lucide-react";
+import { Check, Phone, ThermometerSun } from "lucide-react";
 import Image from "next/image";
 
 import { site } from "@/config/site";
@@ -6,34 +6,61 @@ import { heroImage } from "@/lib/images";
 
 export function Hero() {
   return (
-    <section id="vrh" className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:gap-16">
+    <section id="vrh" className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-2 lg:gap-14">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-          Kuća sa privatnim bazenom · Igman
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-navy-600">
+          {site.hero.subtitle}
         </p>
-        <h1 className="mt-5 text-5xl font-light leading-[1.05] tracking-tight text-brand-700 sm:text-6xl">
-          {site.name}
+        <h1 className="mt-4 font-display text-4xl font-semibold leading-[1.1] text-pine-700 sm:text-5xl">
+          {site.hero.title}
         </h1>
-        <p className="mt-6 max-w-lg text-lg leading-relaxed text-brand-950/70">
-          {site.tagline}. Mir, svjež planinski zrak i privatni bazen u vlastitom
-          dvorištu, okružen livadom i borovom šumom. Cijeli objekat je vaš za
-          vrijeme boravka.
+
+        <div className="mt-6 space-y-1.5">
+          {site.hero.highlights.map((h) => (
+            <p key={h} className="text-sm font-bold uppercase tracking-wide text-gold-dark">
+              {h}
+            </p>
+          ))}
+        </div>
+
+        <p className="mt-5 max-w-lg leading-relaxed text-pine-950/75">
+          {site.hero.intro}
         </p>
 
-        <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:gap-4">
+        <div className="mt-6 inline-flex items-start gap-3 rounded border border-gold/40 bg-gold/10 px-5 py-4">
+          <ThermometerSun className="mt-0.5 h-6 w-6 shrink-0 text-gold-dark" aria-hidden />
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wide text-pine-800">
+              {site.hero.heatingBadge.title}
+            </p>
+            <p className="mt-1 text-sm text-pine-950/70">
+              {site.hero.heatingBadge.text}
+            </p>
+          </div>
+        </div>
+
+        <ul className="mt-6 space-y-2">
+          {site.hero.advantages.map((a) => (
+            <li key={a} className="flex items-center gap-2.5 text-sm font-medium text-pine-950/80">
+              <Check className="h-4 w-4 shrink-0 text-pine-500" aria-hidden />
+              {a}
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <a
-            href="#kalendar"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-accent-dark"
+            href="#kontakt"
+            className="inline-flex items-center justify-center rounded-full bg-gold px-7 py-3.5 text-sm font-bold uppercase tracking-wide text-pine-950 shadow-md transition-colors hover:bg-gold-light"
           >
-            <CalendarCheck className="h-4 w-4" aria-hidden />
-            Provjeri dostupnost
+            {site.cta}
           </a>
           <a
-            href="#galerija"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-950/15 px-7 py-3.5 text-sm font-semibold text-brand-700 transition-colors hover:border-brand-700"
+            href={`tel:+${site.contact.phoneIntl}`}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-pine-950/20 px-7 py-3.5 text-sm font-semibold text-pine-700 transition-colors hover:border-pine-700"
           >
-            <Images className="h-4 w-4" aria-hidden />
-            Pogledaj galeriju
+            <Phone className="h-4 w-4" aria-hidden />
+            {site.contact.phoneDisplay}
           </a>
         </div>
       </div>

@@ -8,16 +8,20 @@ export const runtime = "nodejs";
 
 interface ContactPayload {
   name: string;
-  email: string;
   phone: string;
-  checkIn: string;
-  checkOut: string;
+  date: string;
+  packageId: string;
   guests: number;
-  message: string;
+  order?: string;
+  message?: string;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+function todayISO(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+}
 
 function validate(body: Partial<ContactPayload>): Record<string, string> {
   const errors: Record<string, string> = {};
@@ -25,53 +29,28 @@ function validate(body: Partial<ContactPayload>): Record<string, string> {
   if (!body.name || body.name.trim().length < 2) {
     errors.name = "Unesite ime i prezime.";
   }
-  if (!body.email || !EMAIL_RE.test(body.email)) {
-    errors.email = "Unesite ispravnu email adresu.";
-  }
-  if (body.phone && body.phone.replace(/[^\d+]/g, "").length < 6) {
+  if (!body.phone || body.phone.replace(/[^\d+]/g, "").length < 6) {
     errors.phone = "Unesite ispravan broj telefona.";
   }
-  if (!body.checkIn || !ISO_DATE.test(body.checkIn)) {
-    errors.checkIn = "Odaberite datum dolaska.";
+  if (!body.date || !ISO_DATE.test(body.date)) {
+    errors.date = "Odaberite datum.";
+  } else if (body.date < todayISO()) {
+    errors.date = "Datum ne može biti u prošlosti.";
   }
-  if (!body.checkOut || !ISO_DATE.test(body.checkOut)) {
-    errors.checkOut = "Odaberite datum odlaska.";
-  }
-  if (
-    body.checkIn &&
-    body.checkOut &&
-    ISO_DATE.test(body.checkIn) &&
-    ISO_DATE.test(body.checkOut) &&
-    body.checkOut <= body.checkIn
-  ) {
-    errors.checkOut = "Datum odlaska mora biti nakon datuma dolaska.";
-  }
-  const guests = Number(body.guests);
-  if (!Number.isInteger(guests) || guests < 1 || guests > site.capacity.guests) {
-    errors.guests = `Broj gostiju mora biti između 1 i ${site.capacity.guests}.`;
+  const pkg = site.packages.find((p) => p.id === body.packageId);
+  if (!pkg) {
+    errors.packageId = "Odaberite paket.";
+  } else {
+    const guests = Number(body.guests);
+    if (!Number.isInteger(guests) || guests < 1 || guests > pkg.capacity) {
+      errors.guests = `Broj osoba za odabrani paket mora biti između 1 i ${pkg.capacity}.`;
+    }
   }
   if (body.message && body.message.length > 2000) {
     errors.message = "Poruka je preduga (maks. 2000 karaktera).";
   }
 
   return errors;
-}
-
-function buildEmailHtml(p: ContactPayload): string {
-  const row = (label: string, value: string) =>
-    `<tr><td style="padding:6px 12px;color:#555;vertical-align:top">${label}</td><td style="padding:6px 12px"><strong>${value}</strong></td></tr>`;
-  return `
-    <h2 style="color:#1b4332">Novi upit za rezervaciju — ${site.name}</h2>
-    <table style="border-collapse:collapse;font-family:sans-serif">
-      ${row("Ime i prezime", escapeHtml(p.name))}
-      ${row("Email", `<a href="mailto:${escapeHtml(p.email)}">${escapeHtml(p.email)}</a>`)}
-      ${row("Telefon", escapeHtml(p.phone) || "—")}
-      ${row("Check-in", p.checkIn)}
-      ${row("Check-out", p.checkOut)}
-      ${row("Broj gostiju", String(p.guests))}
-    </table>
-    <p style="font-family:sans-serif"><strong>Poruka:</strong><br/>${escapeHtml(p.message || "—").replace(/\n/g, "<br/>")}</p>
-  `;
 }
 
 function escapeHtml(s: string): string {
@@ -82,19 +61,33 @@ function escapeHtml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+function buildEmailHtml(p: ContactPayload): string {
+  const pkg = site.packages.find((x) => x.id === p.packageId);
+  const row = (label: string, value: string) =>
+    `<tr><td style="padding:6px 12px;color:#555;vertical-align:top">${label}</td><td style="padding:6px 12px"><strong>${value}</strong></td></tr>`;
+  return `
+    <h2 style="color:#0f3d2e">Novi upit za rezervaciju — ${site.name}</h2>
+    <table style="border-collapse:collapse;font-family:sans-serif">
+      ${row("Ime i prezime", escapeHtml(p.name))}
+      ${row("Telefon", `<a href="tel:${escapeHtml(p.phone)}">${escapeHtml(p.phone)}</a>`)}
+      ${row("Datum", p.date)}
+      ${row("Paket", pkg ? `${pkg.name} (do ${pkg.capacity} osoba)` : p.packageId)}
+      ${row("Broj osoba", String(p.guests))}
+      ${row("Dodatna narudžba", escapeHtml(p.order || "—"))}
+    </table>
+    <p style="font-family:sans-serif"><strong>Poruka:</strong><br/>${escapeHtml(p.message || "—").replace(/\n/g, "<br/>")}</p>
+  `;
+}
+
 async function sendWithResend(
   to: string,
   subject: string,
   html: string,
-  replyTo: string,
 ): Promise<void> {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { error } = await resend.emails.send({
-    from:
-      process.env.EMAIL_FROM ??
-      `${site.name} <onboarding@resend.dev>`,
+    from: process.env.EMAIL_FROM ?? `${site.name} <onboarding@resend.dev>`,
     to,
-    replyTo,
     subject,
     html,
   });
@@ -105,7 +98,6 @@ async function sendWithSmtp(
   to: string,
   subject: string,
   html: string,
-  replyTo: string,
 ): Promise<void> {
   const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
@@ -119,7 +111,6 @@ async function sendWithSmtp(
   await transporter.sendMail({
     from: process.env.EMAIL_FROM ?? process.env.SMTP_USER,
     to,
-    replyTo,
     subject,
     html,
   });
@@ -139,40 +130,38 @@ export async function POST(request: Request) {
   }
 
   const payload = body as ContactPayload;
-  const to = process.env.CONTACT_EMAIL ?? site.contact.email;
-  const subject = `Upit za rezervaciju: ${payload.checkIn} → ${payload.checkOut} (${payload.name})`;
-  const html = buildEmailHtml(payload);
+  const to = process.env.CONTACT_EMAIL;
+  const hasProvider = Boolean(
+    process.env.RESEND_API_KEY || (process.env.SMTP_HOST && process.env.SMTP_USER),
+  );
 
-  const hasResend = Boolean(process.env.RESEND_API_KEY);
-  const hasSmtp = Boolean(process.env.SMTP_HOST && process.env.SMTP_USER);
-
-  if (!hasResend && !hasSmtp) {
-    // Email servis nije konfigurisan — upit se loguje, klijent dobija
-    // jasnu poruku da kontaktira direktno (vidi .env.example).
+  if (!to || !hasProvider) {
+    // Email nije konfigurisan — klijent dobija 503 i nudi WhatsApp fallback.
     console.warn("[contact] Email servis nije konfigurisan. Upit:", payload);
     return NextResponse.json(
       {
         error:
-          "Slanje emaila trenutno nije konfigurisano. Molimo kontaktirajte nas direktno putem emaila ili WhatsApp/Viber dugmeta.",
+          "Online slanje trenutno nije aktivno. Upit možete poslati direktno preko WhatsApp dugmeta ispod ili pozivom.",
       },
       { status: 503 },
     );
   }
 
+  const pkg = site.packages.find((p) => p.id === payload.packageId);
+  const subject = `Rezervacija ${payload.date} — ${pkg?.name ?? payload.packageId} (${payload.name})`;
+  const html = buildEmailHtml(payload);
+
   try {
-    if (hasResend) {
-      await sendWithResend(to, subject, html, payload.email);
+    if (process.env.RESEND_API_KEY) {
+      await sendWithResend(to, subject, html);
     } else {
-      await sendWithSmtp(to, subject, html, payload.email);
+      await sendWithSmtp(to, subject, html);
     }
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[contact] Greška pri slanju emaila:", err);
     return NextResponse.json(
-      {
-        error:
-          "Došlo je do greške pri slanju poruke. Pokušajte ponovo ili nas kontaktirajte direktno.",
-      },
+      { error: "Došlo je do greške pri slanju. Pokušajte ponovo ili nas pozovite." },
       { status: 502 },
     );
   }
