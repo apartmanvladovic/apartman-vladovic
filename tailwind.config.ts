@@ -23,12 +23,13 @@ const config: Config = {
           950: "#081711",
         },
         mist: {
-          50: "#fbfbfa",
-          100: "#f3f4f1",
+          50: "#fafaf9",
+          100: "#f5f5f4",
         },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        sans: ["var(--font-mulish)", "system-ui", "sans-serif"],
+        display: ["var(--font-newsreader)", "Georgia", "serif"],
       },
     },
   },

@@ -3,6 +3,7 @@
 import { Send } from "lucide-react";
 import { useState } from "react";
 
+import { useBookingRange } from "@/components/BookingProvider";
 import { site } from "@/config/site";
 
 type Status =
@@ -12,11 +13,12 @@ type Status =
   | { kind: "error"; message: string };
 
 const inputClass =
-  "w-full rounded-lg border border-forest-200 bg-white px-3 py-2 text-sm text-forest-950 placeholder:text-forest-950/40 focus:border-forest-400 focus:outline-none focus:ring-1 focus:ring-forest-400";
+  "w-full rounded border border-forest-950/15 bg-white px-3 py-2.5 text-sm text-forest-950 placeholder:text-forest-950/40 focus:border-forest-400 focus:outline-none focus:ring-1 focus:ring-forest-400";
 
 export function ContactForm() {
   const [status, setStatus] = useState<Status>({ kind: "idle" });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const { checkIn, checkOut, setRange } = useBookingRange();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,10 +43,10 @@ export function ContactForm() {
         }),
       });
       const json = await res.json();
-
       if (res.ok) {
         setStatus({ kind: "success" });
         form.reset();
+        setRange("", "");
       } else {
         if (json.errors) setFieldErrors(json.errors);
         setStatus({
@@ -109,14 +111,30 @@ export function ContactForm() {
           <label htmlFor="checkIn" className="mb-1 block text-sm font-medium text-forest-800">
             Datum dolaska *
           </label>
-          <input id="checkIn" name="checkIn" type="date" required className={inputClass} />
+          <input
+            id="checkIn"
+            name="checkIn"
+            type="date"
+            required
+            className={inputClass}
+            value={checkIn}
+            onChange={(e) => setRange(e.target.value, e.target.value <= checkOut ? checkOut : "")}
+          />
           {err("checkIn")}
         </div>
         <div>
           <label htmlFor="checkOut" className="mb-1 block text-sm font-medium text-forest-800">
             Datum odlaska *
           </label>
-          <input id="checkOut" name="checkOut" type="date" required className={inputClass} />
+          <input
+            id="checkOut"
+            name="checkOut"
+            type="date"
+            required
+            className={inputClass}
+            value={checkOut}
+            onChange={(e) => setRange(checkIn, e.target.value)}
+          />
           {err("checkOut")}
         </div>
       </div>
@@ -145,12 +163,12 @@ export function ContactForm() {
       </button>
 
       {status.kind === "success" && (
-        <p className="rounded-lg bg-forest-50 px-4 py-3 text-sm text-forest-700">
+        <p className="rounded bg-forest-50 px-4 py-3 text-sm text-forest-700">
           Hvala! Vaš upit je poslan — javit ćemo se u naj kraćem roku.
         </p>
       )}
       {status.kind === "error" && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+        <p className="rounded bg-red-50 px-4 py-3 text-sm text-red-700">
           {status.message}
         </p>
       )}

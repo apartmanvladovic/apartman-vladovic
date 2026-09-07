@@ -6,44 +6,47 @@ import { heroImage } from "@/lib/images";
 
 export function Hero() {
   return (
-    <section id="vrh" className="relative flex min-h-[92vh] items-center">
-      <Image
-        src={heroImage.src}
-        alt={heroImage.alt}
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover"
-      />
-      <div className="absolute inset-0 bg-gradient-to-b from-forest-950/70 via-forest-950/40 to-forest-950/70" />
-
-      <div className="relative mx-auto w-full max-w-6xl px-4 py-32 text-center sm:px-6">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-forest-200">
-          Podnožje planine Igman
+    <section id="vrh" className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-24 lg:grid-cols-2 lg:gap-16">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
+          Kuća sa privatnim bazenom · Igman
         </p>
-        <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+        <h1 className="mt-5 font-display text-5xl font-light leading-[1.05] tracking-tight text-forest-700 sm:text-6xl">
           {site.name}
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-white/85 sm:text-xl">
-          {site.tagline}
+        <p className="mt-6 max-w-lg text-lg leading-relaxed text-forest-950/70">
+          {site.tagline}. Mir, svjež planinski zrak i privatni bazen u vlastitom
+          dvorištu, okružen livadom i borovom šumom. Cijeli objekat je vaš za
+          vrijeme boravka.
         </p>
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:gap-4">
           <a
             href="#kalendar"
-            className="inline-flex items-center gap-2 rounded-full bg-amber-700 px-7 py-3 font-semibold text-white shadow-lg transition-colors hover:bg-orange-700"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-amber-700 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-orange-800"
           >
-            <CalendarCheck className="h-5 w-5" aria-hidden />
+            <CalendarCheck className="h-4 w-4" aria-hidden />
             Provjeri dostupnost
           </a>
           <a
             href="#galerija"
-            className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-7 py-3 font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-forest-950/15 px-7 py-3.5 text-sm font-semibold text-forest-700 transition-colors hover:border-forest-700"
           >
-            <Images className="h-5 w-5" aria-hidden />
+            <Images className="h-4 w-4" aria-hidden />
             Pogledaj galeriju
           </a>
         </div>
+      </div>
+
+      <div className="relative aspect-[4/3] overflow-hidden rounded shadow-xl">
+        <Image
+          src={heroImage.src}
+          alt={heroImage.alt}
+          fill
+          priority
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="object-cover"
+        />
       </div>
     </section>
   );

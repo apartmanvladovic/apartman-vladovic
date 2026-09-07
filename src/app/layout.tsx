@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Mulish, Newsreader } from "next/font/google";
 
 import { site } from "@/config/site";
 import { heroImage } from "@/lib/images";
 
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const mulish = Mulish({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-mulish",
+});
+
+const newsreader = Newsreader({
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400"],
+  variable: "--font-newsreader",
+});
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
@@ -43,7 +52,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="bs" className={inter.variable}>
+    <html lang="bs" className={`${mulish.variable} ${newsreader.variable}`}>
       <body className="bg-mist-50 font-sans text-forest-950 antialiased">
         {children}
       </body>

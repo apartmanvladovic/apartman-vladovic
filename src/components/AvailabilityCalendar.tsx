@@ -1,34 +1,104 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/style.css";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 import { SectionHeading } from "@/components/SectionHeading";
+import { useBookingRange } from "@/components/BookingProvider";
 
 interface AvailabilityCalendarProps {
   /** ISO datumi (YYYY-MM-DD) koji su zauzeti */
   bookedDates: string[];
 }
 
-function parseISO(iso: string): Date {
+const MONTHS = [
+  "Januar", "Februar", "Mart", "April", "Maj", "Juni",
+  "Juli", "August", "Septembar", "Oktobar", "Novembar", "Decembar",
+];
+const WEEKDAYS = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"];
+
+function toISO(y: number, m: number, d: number): string {
+  return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+}
+
+function todayISO(): string {
+  const now = new Date();
+  return toISO(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+function humanDate(iso: string): string {
+  if (!iso) return "";
   const [y, m, d] = iso.split("-").map(Number);
-  return new Date(y, m - 1, d);
+  return `${d}. ${MONTHS[m - 1].toLowerCase()} ${y}.`;
+}
+
+interface Cell {
+  iso: string | null;
+  day: number | null;
+}
+
+function monthCells(year: number, month: number): Cell[] {
+  // Sedmica počinje ponedjeljkom.
+  const lead = (new Date(year, month, 1).getDay() + 6) % 7;
+  const days = new Date(year, month + 1, 0).getDate();
+  const cells: Cell[] = Array.from({ length: lead }, () => ({ iso: null, day: null }));
+  for (let d = 1; d <= days; d++) cells.push({ iso: toISO(year, month, d), day: d });
+  return cells;
 }
 
 export function AvailabilityCalendar({ bookedDates }: AvailabilityCalendarProps) {
-  // Broj mjeseci zavisi od širine ekrana: 1 (mobitel) / 2 (tablet) / 3 (desktop).
-  const [months, setMonths] = useState(1);
+  const booked = useMemo(() => new Set(bookedDates), [bookedDates]);
+  const { checkIn, checkOut, setRange } = useBookingRange();
+
+  // Broj prikazanih mjeseci zavisi od širine ekrana: 1 / 2 / 3.
+  const [monthsShown, setMonthsShown] = useState(1);
+  const [offset, setOffset] = useState(0); // pomjeraj od trenutnog mjeseca
 
   useEffect(() => {
     const compute = () =>
-      setMonths(window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1);
+      setMonthsShown(window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1);
     compute();
     window.addEventListener("resize", compute);
     return () => window.removeEventListener("resize", compute);
   }, []);
 
-  const booked = bookedDates.map(parseISO);
+  const today = todayISO();
+  const base = new Date();
+  const months = Array.from({ length: monthsShown }, (_, i) => {
+    const d = new Date(base.getFullYear(), base.getMonth() + offset + i, 1);
+    return { year: d.getFullYear(), month: d.getMonth(), cells: monthCells(d.getFullYear(), d.getMonth()) };
+  });
+
+  function pick(iso: string) {
+    if (iso < today || booked.has(iso)) return;
+    const hasFullRange = checkIn && checkOut;
+    const crossesBooked =
+      checkIn && bookedDates.some((b) => b > checkIn && b < iso);
+    if (!checkIn || hasFullRange || iso <= checkIn || crossesBooked) {
+      setRange(iso, "");
+    } else {
+      setRange(checkIn, iso);
+    }
+  }
+
+  function cellClass(iso: string): string {
+    if (iso < today)
+      return "bg-transparent text-forest-950/25 cursor-default";
+    if (booked.has(iso))
+      return "bg-red-200/70 text-red-800 line-through cursor-not-allowed";
+    if (iso === checkIn || (checkOut && iso === checkOut))
+      return "bg-forest-500 text-white font-bold hover:bg-forest-600";
+    if (checkIn && checkOut && iso > checkIn && iso < checkOut)
+      return "bg-forest-200/70 text-forest-800 hover:bg-forest-200";
+    return "bg-forest-100/80 text-forest-700 hover:bg-forest-200";
+  }
+
+  const nights =
+    checkIn && checkOut
+      ? Math.round(
+          (new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000,
+        )
+      : 0;
 
   return (
     <section id="kalendar" className="scroll-mt-20 bg-mist-100 py-20 sm:py-28">
@@ -36,38 +106,91 @@ export function AvailabilityCalendar({ bookedDates }: AvailabilityCalendarProps)
         <SectionHeading
           eyebrow="Dostupnost"
           title="Kalendar zauzetosti"
-          description="Provjerite slobodne termine prije slanja upita. Zauzeti dani su precrtani."
+          description="Odaberite datum dolaska, zatim datum odlaska — termin se automatski prenosi u formu za upit ispod."
         />
 
-        <div className="mx-auto w-fit rounded-2xl border border-forest-100 bg-white p-4 shadow-sm sm:p-6">
-          <DayPicker
-            numberOfMonths={months}
-            disabled={[{ before: new Date() }, ...booked]}
-            modifiers={{ booked }}
-            modifiersClassNames={{ booked: "rdp-day_booked" }}
-            fixedWeeks
-            showOutsideDays
-          />
+        <div className="rounded border border-forest-950/10 bg-white p-4 shadow-sm sm:p-6">
+          <div className="mb-5 flex items-center justify-between">
+            <button
+              type="button"
+              aria-label="Prethodni mjesec"
+              disabled={offset === 0}
+              onClick={() => setOffset((o) => Math.max(0, o - 1))}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-forest-950/15 text-forest-700 transition-colors hover:border-forest-700 disabled:cursor-default disabled:opacity-30"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              type="button"
+              aria-label="Sljedeći mjesec"
+              onClick={() => setOffset((o) => o + 1)}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-forest-950/15 text-forest-700 transition-colors hover:border-forest-700"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
 
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-forest-100 pt-4 text-sm">
-            <span className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-forest-400" aria-hidden />
-              Slobodno
-            </span>
-            <span className="flex items-center gap-2">
-              <span
-                className="h-3 w-3 rounded-full bg-red-600/70"
-                aria-hidden
-              />
-              <span className="text-red-700 line-through">Zauzeto</span>
-            </span>
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {months.map(({ year, month, cells }) => (
+              <div key={`${year}-${month}`} className="[&:nth-child(n+3)]:hidden lg:[&:nth-child(n+3)]:block [&:nth-child(n+2)]:hidden sm:[&:nth-child(n+2)]:block">
+                <p className="mb-3 text-center font-display text-lg text-forest-700">
+                  {MONTHS[month]} {year}
+                </p>
+                <div className="mb-1.5 grid grid-cols-7 gap-1">
+                  {WEEKDAYS.map((d) => (
+                    <span
+                      key={d}
+                      className="text-center text-[10px] font-semibold uppercase tracking-wider text-forest-950/40"
+                    >
+                      {d}
+                    </span>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 gap-1">
+                  {cells.map((cell, i) =>
+                    cell.iso === null ? (
+                      <span key={`empty-${i}`} />
+                    ) : (
+                      <button
+                        key={cell.iso}
+                        type="button"
+                        onClick={() => pick(cell.iso!)}
+                        disabled={cell.iso < today || booked.has(cell.iso)}
+                        className={`flex aspect-square items-center justify-center rounded text-sm transition-colors ${cellClass(cell.iso)}`}
+                      >
+                        {cell.day}
+                      </button>
+                    ),
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-forest-950/10 pt-5 sm:flex-row">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+              <span className="flex items-center gap-2">
+                <span className="h-3.5 w-3.5 rounded bg-forest-100/80" aria-hidden />
+                Slobodno
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-3.5 w-3.5 rounded bg-red-200/70" aria-hidden />
+                Zauzeto
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-3.5 w-3.5 rounded bg-forest-500" aria-hidden />
+                Vaš odabir
+              </span>
+            </div>
+            <p className="text-sm text-forest-950/70">
+              {checkIn && checkOut
+                ? `${humanDate(checkIn)} → ${humanDate(checkOut)} · ${nights} ${nights === 1 ? "noć" : "noći"}`
+                : checkIn
+                  ? `Dolazak ${humanDate(checkIn)} — odaberite datum odlaska.`
+                  : "Još nije odabran termin."}
+            </p>
           </div>
         </div>
-
-        <p className="mx-auto mt-6 max-w-xl text-center text-sm text-forest-950/60">
-          Ne vidite željeni termin? Pošaljite upit — moguće su izmjene i
-          dogovor oko datuma.
-        </p>
       </div>
     </section>
   );

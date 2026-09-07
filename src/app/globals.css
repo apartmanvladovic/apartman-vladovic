@@ -4,39 +4,5 @@
 
 html {
   scroll-behavior: smooth;
-}
-
-/* ─── react-day-picker prilagođavanje (planinska paleta) ─────────────── */
-.rdp-root {
-  --rdp-accent-color: #1b4332;
-  --rdp-accent-background-color: #dcebe2;
-  --rdp-day-height: 2.5rem;
-  --rdp-day-width: 2.5rem;
-  --rdp-day_button-height: 2.375rem;
-  --rdp-day_button-width: 2.375rem;
-  --rdp-selected-font: 600 1rem/1 inherit;
-  --rdp-today-color: #b45309;
-  --rdp-outside-opacity: 0.35;
-  --rdp-nav_button-height: 2rem;
-  --rdp-nav_button-width: 2rem;
-  margin: 0 auto;
-}
-
-.rdp-month_caption {
-  font-weight: 600;
-  color: #1b4332;
-}
-
-/* Zauzet dan: crvenkasto, precrtano, bez hover-a */
-.rdp-day_booked,
-.rdp-day_booked button {
-  color: #b91c1c;
-  text-decoration: line-through;
-  text-decoration-thickness: 2px;
-  opacity: 0.75;
-  cursor: not-allowed;
-}
-
-.rdp-day_booked button {
-  pointer-events: none;
+  scroll-padding-top: 4.5rem;
 }

@@ -14,7 +14,7 @@ export function Location() {
         />
 
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-2xl border border-forest-100 shadow-sm">
+          <div className="overflow-hidden rounded border border-forest-100 shadow-sm">
             <iframe
               title={`Mapa — ${site.name}`}
               src={site.location.mapEmbedUrl}
@@ -30,7 +30,7 @@ export function Location() {
               {site.location.distances.map((d) => (
                 <li
                   key={d.label}
-                  className="flex items-center gap-4 rounded-xl border border-forest-100 bg-white p-4 shadow-sm"
+                  className="flex items-center gap-4 rounded border border-forest-100 bg-white p-4 shadow-sm"
                 >
                   <MapPin className="h-5 w-5 shrink-0 text-forest-500" aria-hidden />
                   <span className="flex-1 text-forest-950/80">{d.label}</span>

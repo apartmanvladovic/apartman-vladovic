@@ -1,5 +1,6 @@
 import { About } from "@/components/About";
 import { AvailabilityCalendar } from "@/components/AvailabilityCalendar";
+import { BookingProvider } from "@/components/BookingProvider";
 import { ContactSection } from "@/components/ContactSection";
 import { Features } from "@/components/Features";
 import { Footer } from "@/components/Footer";
@@ -13,7 +14,7 @@ export default async function Home() {
   const booked = await getBookedDates();
 
   return (
-    <>
+    <BookingProvider>
       <Navbar />
       <main>
         <Hero />
@@ -25,6 +26,6 @@ export default async function Home() {
         <Location />
       </main>
       <Footer />
-    </>
+    </BookingProvider>
   );
 }

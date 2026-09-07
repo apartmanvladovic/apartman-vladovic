@@ -48,7 +48,7 @@ export function Gallery() {
               key={img.src}
               type="button"
               onClick={() => setActive(i)}
-              className="group relative aspect-[4/3] overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-700"
+              className="group relative aspect-[4/3] overflow-hidden rounded focus:outline-none focus:ring-2 focus:ring-amber-700"
             >
               <Image
                 src={img.src}
@@ -102,7 +102,7 @@ export function Gallery() {
                 alt={galleryImages[active].alt}
                 fill
                 sizes="(max-width: 896px) 100vw, 896px"
-                className="rounded-lg object-contain"
+                className="rounded object-contain"
               />
             </div>
             <figcaption className="mt-3 text-center text-sm text-white/80">

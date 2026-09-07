@@ -17,16 +17,16 @@ export function ContactSection() {
         />
 
         <div className="grid gap-10 lg:grid-cols-5">
-          <div className="rounded-2xl border border-forest-100 bg-white p-6 shadow-sm sm:p-8 lg:col-span-3">
+          <div className="rounded border border-forest-100 bg-white p-6 shadow-sm sm:p-8 lg:col-span-3">
             <ContactForm />
           </div>
 
           <div className="space-y-4 lg:col-span-2">
             <a
               href={`mailto:${email}`}
-              className="flex items-center gap-4 rounded-2xl border border-forest-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+              className="flex items-center gap-4 rounded border border-forest-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-forest-50">
+              <span className="flex h-11 w-11 items-center justify-center rounded bg-forest-50">
                 <Mail className="h-5 w-5 text-forest-500" aria-hidden />
               </span>
               <span>
@@ -37,9 +37,9 @@ export function ContactSection() {
 
             <a
               href={`tel:+${phoneIntl}`}
-              className="flex items-center gap-4 rounded-2xl border border-forest-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+              className="flex items-center gap-4 rounded border border-forest-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-forest-50">
+              <span className="flex h-11 w-11 items-center justify-center rounded bg-forest-50">
                 <Phone className="h-5 w-5 text-forest-500" aria-hidden />
               </span>
               <span>
@@ -54,9 +54,9 @@ export function ContactSection() {
               href={`https://wa.me/${phoneIntl}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-4 rounded-2xl bg-forest-500 p-5 text-white shadow-sm transition-colors hover:bg-forest-600"
+              className="flex items-center gap-4 rounded bg-forest-500 p-5 text-white shadow-sm transition-colors hover:bg-forest-600"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15">
+              <span className="flex h-11 w-11 items-center justify-center rounded bg-white/15">
                 <MessageCircle className="h-5 w-5" aria-hidden />
               </span>
               <span>
@@ -65,7 +65,7 @@ export function ContactSection() {
               </span>
             </a>
 
-            <div className="rounded-2xl bg-forest-700 p-5 text-sm leading-relaxed text-white/85">
+            <div className="rounded bg-forest-700 p-5 text-sm leading-relaxed text-white/85">
               Prijava (check-in) {site.houseRules.checkIn}, odjava (check-out){" "}
               {site.houseRules.checkOut}. Rani dolazak ili kasna odjava mogući
               po dogovoru, uz dostupnost.
