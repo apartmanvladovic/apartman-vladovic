@@ -17,6 +17,9 @@ interface ContactPayload {
   guests: number;
   order?: string;
   message?: string;
+  // Anti-bot polja (ne prikazuju se gostu)
+  company?: string;
+  elapsed?: number;
 }
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -143,6 +146,19 @@ export async function POST(request: Request) {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Neispravan zahtjev." }, { status: 400 });
+  }
+
+  // Anti-bot: honeypot popunjen ili forma poslata prebrzo (< 3 s) →
+  // tiho odbaci; bot dobija lažni uspjeh da ne sazna da je otkriven.
+  if (
+    (typeof body.company === "string" && body.company.length > 0) ||
+    (typeof body.elapsed === "number" && body.elapsed < 3)
+  ) {
+    console.warn("[contact] Odbačen vjerovatni bot zahtjev:", {
+      company: body.company,
+      elapsed: body.elapsed,
+    });
+    return NextResponse.json({ ok: true });
   }
 
   const errors = validate(body);

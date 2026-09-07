@@ -25,6 +25,8 @@ export function ContactForm() {
   const [type, setType] = useState<RentalType>("dnevni");
   const [pkg, setPkg] = useState(site.packages[0].id);
   const { checkIn, checkOut, setRange } = useBookingRange();
+  // Vremenska barijera: pamti se trenutak učitavanja forme (anti-bot).
+  const [loadedAt] = useState(() => Date.now());
 
   const selectedPkg = site.packages.find((p) => p.id === pkg) ?? site.packages[0];
   const guestLimit =
@@ -69,6 +71,9 @@ export function ContactForm() {
           guests: Number(data.get("guests")),
           order: data.get("order"),
           message: data.get("message"),
+          // Anti-bot: honeypot polje + proteklo vrijeme od učitavanja (s).
+          company: data.get("company"),
+          elapsed: Math.round((Date.now() - loadedAt) / 1000),
         }),
       });
       const json = await res.json();
@@ -100,6 +105,11 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
+      {/* Honeypot — nevidljivo polje koje popunjavaju samo botovi */}
+      <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-0 w-0 overflow-hidden">
+        <label htmlFor="company">Firma (ne popunjavajte)</label>
+        <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
       {/* Vrsta najma */}
       <div className="grid grid-cols-2 gap-2 rounded bg-cream-100 p-1.5">
         {(["dnevni", "nocenje"] as const).map((t) => (
