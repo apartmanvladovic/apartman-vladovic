@@ -46,6 +46,9 @@ export const metadata: Metadata = {
     images: [{ url: heroImage.src, width: 2000, height: 1125, alt: heroImage.alt }],
   },
   robots: { index: true, follow: true },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({
