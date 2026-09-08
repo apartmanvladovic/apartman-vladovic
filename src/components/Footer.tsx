@@ -43,7 +43,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10 py-5 text-center text-xs text-cream-50/50">
-        © {year} {site.name}. Sva prava zadržana.
+        © {year} {site.name} — Sva prava pridržana.
       </div>
     </footer>
   );
