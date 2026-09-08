@@ -84,6 +84,42 @@ export async function getRepoFile(path: string): Promise<RepoFile | null> {
   };
 }
 
+/** Putanje fajlova koje admin chat smije čitati/mijenjati kao kod. */
+const SOURCE_PATH = /^src\/.+\.(ts|tsx|css)$|^tailwind\.config\.ts$|^next\.config\.ts$/;
+
+/** Lista source fajlova u repou (Git Trees API, jedan poziv). */
+export async function listSourceFiles(): Promise<string[]> {
+  const c = config();
+  const res = await fetch(
+    `${API}/repos/${c.owner}/${c.repo}/git/trees/${encodeURIComponent(c.branch)}?recursive=1`,
+    {
+      headers: {
+        Authorization: `Bearer ${c.token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      cache: "no-store",
+    },
+  );
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`GitHub GET tree → ${res.status}: ${detail.slice(0, 300)}`);
+  }
+  const json = (await res.json()) as { tree: { path: string; type: string }[] };
+  return json.tree
+    .filter((e) => e.type === "blob" && SOURCE_PATH.test(e.path))
+    .map((e) => e.path)
+    .sort();
+}
+
+/** Dohvata sadržaje više tekstualnih fajlova paralelno (preskače nepostojeće). */
+export async function getRepoFiles(
+  paths: string[],
+): Promise<{ path: string; text: string }[]> {
+  const results = await Promise.all(paths.map((p) => getRepoFile(p)));
+  return results.flatMap((f, i) => (f ? [{ path: paths[i], text: f.text }] : []));
+}
+
 /** Kreira ili ažurira tekstualni fajl (UTF-8) jednim commitom. */
 export async function commitTextFile(
   path: string,

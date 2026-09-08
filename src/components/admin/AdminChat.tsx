@@ -44,7 +44,7 @@ export function AdminChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "assistant",
-      text: 'Zdravo! Ovdje mijenjate sadržaj stranice. Napišite npr. "Promijeni cijenu Paketa 1 na 280 KM" ili priložite sliku uz poruku "Postavi ovo kao hero sliku".',
+      text: 'Zdravo! Ovdje upravljate cijelom stranicom. Primjeri: "Promijeni cijenu Paketa 1 na 280 KM", "Označi 15–20. oktobar kao zauzeto", "Dodaj novu sekciju na stranicu", ili priložite sliku uz "Postavi ovo kao hero sliku".',
     },
   ]);
   const [input, setInput] = useState("");
@@ -130,7 +130,7 @@ export function AdminChat() {
       }
 
       // Korak 2: Gemini obrađuje zahtjev i ažurira site-data.json
-      replaceStatus("Gemini ažurira podatke…");
+      replaceStatus("Gemini obrađuje zahtjev…");
       const chatRes = await fetch("/api/admin/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -142,13 +142,19 @@ export function AdminChat() {
       }
 
       replaceStatus(null);
+      const committed: string[] = Array.isArray(chatJson.committed) ? chatJson.committed : [];
+      let suffix = "";
+      if (chatJson.changed) {
+        suffix = "\n\n✅ Objavljeno! Vercel će za minut-dva osvježiti stranicu.";
+        if (chatJson.codeChanged) {
+          suffix += `\n\n⚠️ Mijenjan je kod (${committed
+            .filter((p) => p.startsWith("src/"))
+            .join(", ")}). Ako stranica pukne, napišite ovdje "vrati zadnju izmjenu koda" ili me kontaktirajte.`;
+        }
+      }
       pushMessage({
         role: "assistant",
-        text:
-          chatJson.reply +
-          (chatJson.changed
-            ? "\n\n✅ Objavljeno! Vercel će za minut-dva osvježiti stranicu."
-            : ""),
+        text: chatJson.reply + suffix,
       });
     } catch (err) {
       replaceStatus(null);

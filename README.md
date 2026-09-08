@@ -28,11 +28,22 @@ Postojeće slike su u `public/images/`; admin-uploadovane slike idu u
 
 ## 3. Admin chat (`/admin`) — uređivanje sadržaja s telefona
 
-`/admin` je zaštićen chat: prijavite se Google nalogom, opišite šta želite
-("promijeni cijenu Paketa 1 na 280 KM") ili priložite sliku ("postavi ovo kao
-hero sliku"). Gemini 2.5 Flash ažurira `content/site-data.json`, slika se
-komituje u `public/uploads/`, a sve ide kao Git commit → Vercel automatski
-redeploya sajt za minut-dva.
+`/admin` je zaštićen chat: prijavite se Google nalogom i opišite šta želite.
+Chat može tri nivoa izmjena:
+1. **Sadržaj** — tekstovi, cijene, kontakt, slike (`content/site-data.json`),
+   npr. "promijeni cijenu Paketa 1 na 280 KM" ili priložena slika uz
+   "postavi ovo kao hero sliku" (slika se komituje u `public/uploads/`).
+2. **Kalendar** — zauzetost termina (`data/bookedDates.json`),
+   npr. "označi 15–20. oktobar kao zauzeto" ili "oslobodi 5. novembar".
+3. **Kod stranice** — nove sekcije, raspored, komponente (`src/**`),
+   npr. "dodaj sekciju sa čestim pitanjima". Gemini dvofazno: prvo zatraži
+   fajlove koje treba vidjeti, zatim vrati kompletne nove sadržaje.
+   Fajlovi `src/auth.ts`, `src/middleware.ts` i sam admin chat su zaštićeni
+   od izmjena kroz chat (sprečava slučajno zaključavanje pristupa).
+
+Sve izmjene idu kao Git commit na `main` → Vercel automatski redeploya sajt
+za minut-dva. Ako izmjena koda nešto pokvari, vratite je sa
+`git revert <sha>` ili pitajte u chatu da vrati nazad.
 
 Pristup ima **isključivo** email iz `ADMIN_ALLOWED_EMAIL` — ostali dobijaju 403.
 

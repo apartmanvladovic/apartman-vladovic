@@ -201,6 +201,31 @@ const siteDataSchema: Schema = {
   ],
 };
 
+const bookedDatesSchema: Schema = {
+  type: Type.OBJECT,
+  description: "Kompletan sadržaj data/bookedDates.json — zauzetost kalendara.",
+  properties: {
+    bookedDates: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      description: "Pojedinačni zauzeti datumi, format YYYY-MM-DD.",
+    },
+    bookedRanges: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          start: { type: Type.STRING, description: "Check-in YYYY-MM-DD (zauzet)." },
+          end: { type: Type.STRING, description: "Check-out YYYY-MM-DD (SLOBODAN dan)." },
+          note: { type: Type.STRING, nullable: true },
+        },
+        required: ["start", "end"],
+      },
+    },
+  },
+  required: ["bookedDates", "bookedRanges"],
+};
+
 const responseSchema: Schema = {
   type: Type.OBJECT,
   properties: {
@@ -208,23 +233,97 @@ const responseSchema: Schema = {
       type: Type.STRING,
       description: "Kratka poruka administratoru na bosanskom — šta je urađeno.",
     },
-    data: siteDataSchema,
+    siteData: {
+      ...siteDataSchema,
+      description:
+        "KOMPLETAN ažurirani site-data.json — pošalji SAMO ako administrator traži izmjenu sadržaja; inače izostavi.",
+    },
+    bookedDates: {
+      ...bookedDatesSchema,
+    },
+    codeRequest: {
+      type: Type.OBJECT,
+      description:
+        "Popuni SAMO ako izmjena zahtijeva izvorni kod (ne može kroz siteData/bookedDates) — navedi koje fajlove trebaš vidjeti. Sadržaj fajlova dobivaš u sljedećem koraku.",
+      properties: {
+        files: {
+          type: Type.ARRAY,
+          items: { type: Type.STRING },
+          description: "Putanje postojećih fajlova iz date liste koje trebaš pročitati.",
+        },
+        plan: { type: Type.STRING, description: "Jedna rečenica: šta ćeš uraditi u kodu." },
+      },
+      required: ["files", "plan"],
+      nullable: true,
+    },
   },
-  required: ["reply", "data"],
+  required: ["reply"],
 };
 
-const SYSTEM_INSTRUCTION = `Ti si asistent koji uređuje sadržaj web stranice Vikendica AQUA (apartman/vikendica sa bazenom kod Sarajeva).
-Administrator ti šalje zahtjev na bosanskom, a ti vraćaš:
-- reply: kratku potvrdu na bosanskom šta si uradio (1-2 rečenice),
-- data: KOMPLETAN ažurirani site-data JSON.
+const codeEditResponseSchema: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    reply: {
+      type: Type.STRING,
+      description: "Kratka poruka administratoru na bosanskom — šta je urađeno u kodu.",
+    },
+    codeEdits: {
+      type: Type.ARRAY,
+      description: "Za svaki fajl KOMPLETAN novi sadržaj (ne diff).",
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          path: { type: Type.STRING, description: "Putanja fajla, npr. src/components/Hero.tsx" },
+          content: { type: Type.STRING, description: "Kompletan novi sadržaj fajla." },
+          summary: { type: Type.STRING, description: "Jedna rečenica: šta je promijenjeno." },
+        },
+        required: ["path", "content", "summary"],
+      },
+    },
+  },
+  required: ["reply", "codeEdits"],
+};
+
+const SYSTEM_INSTRUCTION = `Ti si asistent koji uređuje web stranicu Vikendica AQUA (vikendica sa bazenom kod Sarajeva), Next.js + Tailwind projekat.
+Administrator (vlasnik, ne tehnička osoba) ti šalje zahtjev na bosanskom. Odgovaraš structured JSON-om sa poljima:
+
+- reply (obavezno): kratka potvrda na bosanskom šta si uradio (1-2 rečenice).
+- siteData (opcionalno): KOMPLETAN ažurirani site-data.json — pošalji samo ako mijenjaš tekstove, cijene, slike, kontakt ili bilo koji sadržaj koji već postoji u tom fajlu. Uvijek vrati CIJELI JSON sa svim poljima; mijenjaj samo traženo.
+- bookedDates (opcionalno): KOMPLETAN novi sadržaj kalendara zauzetosti — pošalji samo za izmjene dostupnosti (npr. "označi 15–20. septembar kao zauzeto", "oslobodi 5. oktobar"). Formati: YYYY-MM-DD; range "end" je dan odjave i ostaje SLOBODAN (Airbnb konvencija).
+- codeRequest (opcionalno): koristi SAMO kada izmjenu NIJE moguće uraditi kroz siteData/bookedDates (npr. nova sekcija, drugačiji raspored, nova komponenta). Navedi koje postojeće fajlove trebaš pročitati (iz priložene liste) i kratki plan — sadržaj fajlova dobivaš u sljedećem koraku, gdje ćeš vratiti konačne izmjene. Ako trebaš napraviti potpuno novi fajl, navedi najbliže postojeće fajlove kao referencu stila.
 
 Pravila:
-- UVIJEK vrati cijeli JSON sa svim poljima; mijenjaj samo ono što je administrator tražio, sve ostalo zadrži nepromijenjeno.
+- Ako je poruka samo pitanje bez zahtjeva za izmjenom, odgovori u reply polju i izostavi sva ostala polja.
 - Tekst piši na bosanskom, u istom tonu i stilu kao postojeći sadržaj.
 - Putanje slika su relativne (npr. /images/hero.jpg ili /uploads/...). Nikad ne izmišljaj putanje — koristi samo postojeće ili onu koja ti je eksplicitno data uz priloženu sliku.
 - Ako je uz poruku priložena slika, pogledaj je i iskoristi njen dati public path tamo gdje administrator traži (npr. images.hero.src ili nova stavka u images.gallery sa smislenim alt tekstom i kategorijom).
-- Ako je poruka samo pitanje bez zahtjeva za izmjenom, odgovori u reply polju, a data vrati nepromijenjen.
-- Cijene i novčane iznose mijenjaj samo ako je to eksplicitno traženo.`;
+- Cijene i novčane iznose mijenjaj samo ako je to eksplicitno traženo.
+- Nemoj mijenjati src/auth.ts, src/middleware.ts niti admin chat rute (src/app/api/admin/, src/app/admin/) osim ako administrator izričito to traži — time možeš zauvijek zaključati pristup.
+- U reply-ju jasno navedi šta je promijenjeno i da Vercel objavljuje izmjenu za 1-2 minute. Ako je izmjena koda u toku (codeRequest), u reply-ju reci da pripremaš izmjenu koda.`;
+
+const CODE_EDIT_INSTRUCTION = `Ti si asistent koji uređuje izvorni kod web stranice Vikendica AQUA (Next.js 15 App Router + Tailwind + TypeScript).
+Dobivaš zahtjev administratora, plan iz prethodnog koraka i sadržaje relevantnih fajlova. Vrati:
+
+- reply: kratku potvrdu na bosanskom šta je urađeno (1-2 rečenice), uz napomenu da Vercel objavljuje izmjenu za 1-2 minute i upozorenje da se izmjena može vratiti nazad ako nešto ne radi.
+- codeEdits: niz izmjena — za svaki fajl KOMPLETAN novi sadržaj (ne diff, ne izostavljanje dijelova).
+
+Pravila:
+- Validan TypeScript/TSX koji prolazi kompilaciju; drži se postojećeg stila projekta (Tailwind klase, postojeći obrasci, bosanski tekstovi).
+- Minimalna, ciljana izmjena — ne refaktoriši ništa što nije traženo.
+- Dinamički sadržaj (tekstovi, cijene, slike) NE hardkodiraj — čitaj iz @/lib/content (site) kao što postojeće komponente rade.
+- Nemoj mijenjati src/auth.ts, src/middleware.ts niti admin chat (src/app/api/admin/, src/app/admin/) osim ako je izričito traženo.
+- Ako zahtjev nije moguće sigurno implementirati, vrati prazan codeEdits i objasni u reply-ju zašto.`;
+
+export interface CodeEdit {
+  path: string;
+  content: string;
+  summary: string;
+}
+
+export interface BookedDatesEdit {
+  bookedDates: string[];
+  bookedRanges: { start: string; end: string; note?: string }[];
+}
 
 export interface AdminImageInput {
   /** Javna putanja nakon GitHub commita, npr. /uploads/123-bazen.webp */
@@ -232,22 +331,53 @@ export interface AdminImageInput {
   mimeType: string;
   dataBase64: string;
 }
-
 export interface AdminEditResult {
   reply: string;
-  data: SiteData;
+  siteData?: SiteData;
+  bookedDates?: BookedDatesEdit;
+  codeRequest?: { files: string[]; plan: string };
 }
 
+export interface AdminCodeEditResult {
+  reply: string;
+  codeEdits: CodeEdit[];
+}
+
+function newClient(): GoogleGenAI {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) throw new Error("Nedostaje env varijabla: GEMINI_API_KEY");
+  return new GoogleGenAI({ apiKey });
+}
+
+async function generate<T>(params: {
+  systemInstruction: string;
+  schema: Schema;
+  parts: ({ text: string } | { inlineData: { mimeType: string; data: string } })[];
+}): Promise<T> {
+  const ai = newClient();
+  const response = await ai.models.generateContent({
+    model: MODEL,
+    contents: [{ role: "user", parts: params.parts }],
+    config: {
+      systemInstruction: params.systemInstruction,
+      responseMimeType: "application/json",
+      responseSchema: params.schema,
+      temperature: 0.2,
+    },
+  });
+  const text = response.text;
+  if (!text) throw new Error("Gemini nije vratio odgovor.");
+  return JSON.parse(text) as T;
+}
+
+/** Faza 1: sadržaj/kalendar/pitanje + lista source fajlova za kod. */
 export async function runAdminEdit(params: {
   message: string;
   currentData: SiteData;
+  currentBooked: string;
+  sourceFileList: string[];
   image?: AdminImageInput;
 }): Promise<AdminEditResult> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("Nedostaje env varijabla: GEMINI_API_KEY");
-
-  const ai = new GoogleGenAI({ apiKey });
-
   const parts: ({ text: string } | { inlineData: { mimeType: string; data: string } })[] = [];
 
   if (params.image) {
@@ -263,26 +393,50 @@ export async function runAdminEdit(params: {
   }
 
   parts.push({
-    text: `Trenutni site-data.json:\n\`\`\`json\n${JSON.stringify(params.currentData, null, 2)}\n\`\`\`\n\nZahtjev administratora: ${params.message}`,
+    text: [
+      `Trenutni content/site-data.json:\n\`\`\`json\n${JSON.stringify(params.currentData, null, 2)}\n\`\`\``,
+      `Trenutni data/bookedDates.json:\n\`\`\`json\n${params.currentBooked}\n\`\`\``,
+      `Postojeći source fajlovi (sadržaj dobivaš na zahtjev preko codeRequest):\n${params.sourceFileList.join("\n")}`,
+      `Zahtjev administratora: ${params.message}`,
+    ].join("\n\n"),
   });
 
-  const response = await ai.models.generateContent({
-    model: MODEL,
-    contents: [{ role: "user", parts }],
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTION,
-      responseMimeType: "application/json",
-      responseSchema,
-      temperature: 0.2,
-    },
+  const parsed = await generate<AdminEditResult>({
+    systemInstruction: SYSTEM_INSTRUCTION,
+    schema: responseSchema,
+    parts,
   });
-
-  const text = response.text;
-  if (!text) throw new Error("Gemini nije vratio odgovor.");
-
-  const parsed = JSON.parse(text) as AdminEditResult;
-  if (!parsed.data || typeof parsed.reply !== "string") {
+  if (typeof parsed.reply !== "string") {
     throw new Error("Gemini odgovor nema očekivanu strukturu.");
+  }
+  return parsed;
+}
+
+/** Faza 2: izmjena koda — poziva se tek kad faza 1 vrati codeRequest. */
+export async function runAdminCodeEdit(params: {
+  message: string;
+  plan: string;
+  files: { path: string; text: string }[];
+}): Promise<AdminCodeEditResult> {
+  const fileContext = params.files.length
+    ? params.files.map((f) => `--- ${f.path} ---\n${f.text}`).join("\n\n")
+    : "(nijedan traženi fajl ne postoji — radi se o novim fajlovima)";
+
+  const parsed = await generate<AdminCodeEditResult>({
+    systemInstruction: CODE_EDIT_INSTRUCTION,
+    schema: codeEditResponseSchema,
+    parts: [
+      {
+        text: [
+          `Plan izmjene: ${params.plan}`,
+          `Sadržaji relevantnih fajlova:\n${fileContext}`,
+          `Zahtjev administratora: ${params.message}`,
+        ].join("\n\n"),
+      },
+    ],
+  });
+  if (typeof parsed.reply !== "string" || !Array.isArray(parsed.codeEdits)) {
+    throw new Error("Gemini odgovor nema očekivanu strukturu (codeEdits).");
   }
   return parsed;
 }
