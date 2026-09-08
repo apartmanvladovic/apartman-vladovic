@@ -281,8 +281,8 @@
   ],
   "images": {
     "hero": {
-      "src": "/images/bazen-1.jpg",
-      "alt": "Privatni bazen na otvorenom"
+      "src": "/images/hero.jpg",
+      "alt": "Kuća i bazen u dvorištu"
     },
     "finale": {
       "src": "/images/dvoriste-vece.jpg",
