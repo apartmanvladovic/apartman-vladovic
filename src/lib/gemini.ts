@@ -1,13 +1,12 @@
 /**
- * Gemini 2.5 Flash — uređivanje content/site-data.json kroz admin chat.
- * Structured output: { reply, data } gdje je data kompletan ažurirani
- * site-data JSON (shema odgovara SiteData tipu).
+ * Admin chat domenska logika — sheme, instrukcije i dvofazno uređivanje
+ * (sadržaj / kalendar / kod). Samo generisanje ide kroz LLM registry
+ * (src/lib/llm) — provider se bira u /admin Postavke.
  */
-import { GoogleGenAI, Type, type Schema } from "@google/genai";
+import { Type, type Schema } from "@google/genai";
 
 import type { SiteData } from "@/lib/content";
-
-const MODEL = "gemini-2.5-flash";
+import type { LlmProvider } from "@/lib/llm";
 
 const siteDataSchema: Schema = {
   type: Type.OBJECT,
@@ -343,35 +342,8 @@ export interface AdminCodeEditResult {
   codeEdits: CodeEdit[];
 }
 
-function newClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("Nedostaje env varijabla: GEMINI_API_KEY");
-  return new GoogleGenAI({ apiKey });
-}
-
-async function generate<T>(params: {
-  systemInstruction: string;
-  schema: Schema;
-  parts: ({ text: string } | { inlineData: { mimeType: string; data: string } })[];
-}): Promise<T> {
-  const ai = newClient();
-  const response = await ai.models.generateContent({
-    model: MODEL,
-    contents: [{ role: "user", parts: params.parts }],
-    config: {
-      systemInstruction: params.systemInstruction,
-      responseMimeType: "application/json",
-      responseSchema: params.schema,
-      temperature: 0.2,
-    },
-  });
-  const text = response.text;
-  if (!text) throw new Error("Gemini nije vratio odgovor.");
-  return JSON.parse(text) as T;
-}
-
 /** Faza 1: sadržaj/kalendar/pitanje + lista source fajlova za kod. */
-export async function runAdminEdit(params: {
+export async function runAdminEdit(provider: LlmProvider, params: {
   message: string;
   currentData: SiteData;
   currentBooked: string;
@@ -401,7 +373,7 @@ export async function runAdminEdit(params: {
     ].join("\n\n"),
   });
 
-  const parsed = await generate<AdminEditResult>({
+  const parsed = await provider.generate<AdminEditResult>({
     systemInstruction: SYSTEM_INSTRUCTION,
     schema: responseSchema,
     parts,
@@ -413,7 +385,7 @@ export async function runAdminEdit(params: {
 }
 
 /** Faza 2: izmjena koda — poziva se tek kad faza 1 vrati codeRequest. */
-export async function runAdminCodeEdit(params: {
+export async function runAdminCodeEdit(provider: LlmProvider, params: {
   message: string;
   plan: string;
   files: { path: string; text: string }[];
@@ -422,7 +394,7 @@ export async function runAdminCodeEdit(params: {
     ? params.files.map((f) => `--- ${f.path} ---\n${f.text}`).join("\n\n")
     : "(nijedan traženi fajl ne postoji — radi se o novim fajlovima)";
 
-  const parsed = await generate<AdminCodeEditResult>({
+  const parsed = await provider.generate<AdminCodeEditResult>({
     systemInstruction: CODE_EDIT_INSTRUCTION,
     schema: codeEditResponseSchema,
     parts: [

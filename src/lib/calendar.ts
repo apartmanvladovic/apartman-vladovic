@@ -6,9 +6,48 @@ export interface BookedRange {
   note?: string;
 }
 
-interface BookedDatesFile {
+export interface BookedDatesEdit {
   bookedDates: string[];
   bookedRanges: BookedRange[];
+}
+
+interface BookedDatesFile extends BookedDatesEdit {
+  _napomena?: string;
+}
+
+const BOOKED_NAPOMENA =
+  "Zauzeti datumi. Vlasnik dodaje pojedinačne datume u 'bookedDates' (format YYYY-MM-DD) ili cijele periode u 'bookedRanges' (check-in 'start', check-out 'end' — dan odjave je slobodan).";
+
+/** Validacija izmjene kalendara; null ako je sve ispravno, inače poruka greške. */
+export function validateBookedDates(data: BookedDatesEdit): string | null {
+  if (!Array.isArray(data.bookedDates) || !Array.isArray(data.bookedRanges)) {
+    return "bookedDates mora imati nizove bookedDates i bookedRanges.";
+  }
+  for (const d of data.bookedDates) {
+    if (!ISO_DATE.test(d)) return `Neispravan datum: ${d}`;
+  }
+  for (const r of data.bookedRanges) {
+    if (!ISO_DATE.test(r.start) || !ISO_DATE.test(r.end)) {
+      return `Neispravan period: ${r.start} – ${r.end}`;
+    }
+    if (r.end <= r.start) return `Period ${r.start} – ${r.end}: end mora biti poslije start.`;
+  }
+  return null;
+}
+
+/** Serijalizuje izmjenu u finalni sadržaj data/bookedDates.json. */
+export function serializeBookedDates(data: BookedDatesEdit): string {
+  return (
+    JSON.stringify(
+      {
+        _napomena: BOOKED_NAPOMENA,
+        bookedDates: [...data.bookedDates].sort(),
+        bookedRanges: data.bookedRanges,
+      },
+      null,
+      2,
+    ) + "\n"
+  );
 }
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;

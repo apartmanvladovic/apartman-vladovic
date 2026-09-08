@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import { auth, isAdmin } from "@/auth";
 import { site } from "@/lib/content";
-import { AdminChat } from "@/components/admin/AdminChat";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 import { SignInButton } from "@/components/admin/SignInButton";
 import { SignOutButton } from "@/components/admin/SignOutButton";
 
@@ -89,7 +89,7 @@ export default async function AdminPage() {
           <SignOutButton label="Odjava" />
         </div>
       </header>
-      <AdminChat />
+      <AdminTabs />
     </main>
   );
 }

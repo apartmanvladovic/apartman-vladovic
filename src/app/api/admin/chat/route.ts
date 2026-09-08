@@ -1,27 +1,26 @@
 /**
  * POST /api/admin/chat — JSON { message, imagePath?, imageBase64?, imageMimeType? }.
  * Dohvata aktuelno stanje s GitHuba (site-data.json, bookedDates.json i
- * izvorni kod), šalje zahtjev Geminiju (structured output), pa commituje
- * sve što se promijenilo: sadržaj, kalendar zauzetosti i/ili fajlovi koda.
+ * izvorni kod), šalje zahtjev aktivnom LLM provideru (structured output),
+ * pa commituje sve što se promijenilo: sadržaj, kalendar i/ili fajlove koda.
  */
 import { NextResponse } from "next/server";
 
 import { auth, isAdmin } from "@/auth";
+import { getActiveLlmProvider } from "@/lib/adminSettings";
+import { serializeBookedDates, validateBookedDates, type BookedDatesEdit } from "@/lib/calendar";
 import type { SiteData } from "@/lib/content";
-import { runAdminCodeEdit, runAdminEdit, type BookedDatesEdit } from "@/lib/gemini";
+import { runAdminCodeEdit, runAdminEdit } from "@/lib/gemini";
 import { commitTextFile, getRepoFile, getRepoFiles, listSourceFiles } from "@/lib/github";
+import type { LlmProvider } from "@/lib/llm";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const SITE_DATA_PATH = "content/site-data.json";
 const BOOKED_PATH = "data/bookedDates.json";
-const BOOKED_NAPOMENA =
-  "Zauzeti datumi. Vlasnik dodaje pojedinačne datume u 'bookedDates' (format YYYY-MM-DD) ili cijele periode u 'bookedRanges' (check-in 'start', check-out 'end' — dan odjave je slobodan).";
 
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-
-/** Gemini smije pisati samo po ovim putanjama — nikad .env, package.json, auth. */
+/** Model smije pisati samo po ovim putanjama — nikad .env, package.json, auth. */
 const CODE_EDIT_ALLOW =
   /^src\/(?!auth\.ts$|middleware\.ts$|app\/api\/admin\/|app\/admin\/).+\.(ts|tsx|css)$/;
 
@@ -40,22 +39,6 @@ function validateSiteData(data: unknown): data is SiteData {
     "drinksService", "rules", "finale", "footerRules", "images",
   ];
   return keys.every((k) => k in (data as Record<string, unknown>));
-}
-
-function validateBooked(data: BookedDatesEdit): string | null {
-  if (!Array.isArray(data.bookedDates) || !Array.isArray(data.bookedRanges)) {
-    return "bookedDates mora imati nizove bookedDates i bookedRanges.";
-  }
-  for (const d of data.bookedDates) {
-    if (!ISO_DATE.test(d)) return `Neispravan datum: ${d}`;
-  }
-  for (const r of data.bookedRanges) {
-    if (!ISO_DATE.test(r.start) || !ISO_DATE.test(r.end)) {
-      return `Neispravan period: ${r.start} – ${r.end}`;
-    }
-    if (r.end <= r.start) return `Period ${r.start} – ${r.end}: end mora biti poslije start.`;
-  }
-  return null;
 }
 
 export async function POST(req: Request) {
@@ -95,12 +78,15 @@ export async function POST(req: Request) {
   let current: SiteData;
   let bookedRaw: string;
   let sourcePaths: string[];
+  let provider: LlmProvider;
   try {
-    const [siteFile, bookedFile, paths] = await Promise.all([
+    const [siteFile, bookedFile, paths, activeProvider] = await Promise.all([
       getRepoFile(SITE_DATA_PATH),
       getRepoFile(BOOKED_PATH),
       listSourceFiles(),
+      getActiveLlmProvider(),
     ]);
+    provider = activeProvider;
     sourcePaths = paths;
     if (!siteFile) {
       return NextResponse.json(
@@ -117,7 +103,7 @@ export async function POST(req: Request) {
 
   let result;
   try {
-    result = await runAdminEdit({
+    result = await runAdminEdit(provider, {
       message,
       currentData: current,
       currentBooked: bookedRaw,
@@ -150,23 +136,18 @@ export async function POST(req: Request) {
 
     // 2) Kalendar zauzetosti
     if (result.bookedDates !== undefined) {
-      const errMsg = validateBooked(result.bookedDates);
+      const errMsg = validateBookedDates(result.bookedDates);
       if (errMsg) {
         return NextResponse.json(
           { error: `Gemini je vratio neispravan kalendar (${errMsg}). Ništa nije objavljeno.`, reply: result.reply },
           { status: 502 },
         );
       }
-      const nextBooked = {
-        _napomena: BOOKED_NAPOMENA,
-        bookedDates: result.bookedDates.bookedDates,
-        bookedRanges: result.bookedDates.bookedRanges,
-      };
-      const nextRaw = JSON.stringify(nextBooked, null, 2) + "\n";
+      const nextRaw = serializeBookedDates(result.bookedDates);
       const prevParsed = JSON.parse(bookedRaw) as Record<string, unknown>;
       if (
-        JSON.stringify(prevParsed.bookedDates) !== JSON.stringify(nextBooked.bookedDates) ||
-        JSON.stringify(prevParsed.bookedRanges) !== JSON.stringify(nextBooked.bookedRanges)
+        JSON.stringify(prevParsed.bookedDates) !== JSON.stringify(result.bookedDates.bookedDates) ||
+        JSON.stringify(prevParsed.bookedRanges) !== JSON.stringify(result.bookedDates.bookedRanges)
       ) {
         await commitTextFile(BOOKED_PATH, nextRaw, `Admin kalendar: ${summary}`);
         committed.push(BOOKED_PATH);
@@ -179,7 +160,7 @@ export async function POST(req: Request) {
         (p) => typeof p === "string" && sourcePaths.includes(p),
       );
       const files = await getRepoFiles(requested);
-      const codeResult = await runAdminCodeEdit({
+      const codeResult = await runAdminCodeEdit(provider, {
         message,
         plan: result.codeRequest.plan,
         files,
